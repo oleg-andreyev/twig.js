@@ -2,10 +2,11 @@
 
 namespace TwigJs\Tests;
 
-use DNode;
+use DNode\DNode;
 use Exception;
 use PHPUnit_Framework_TestCase;
 use React;
+use React\EventLoop\StreamSelectLoop;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RecursiveRegexIterator;
@@ -20,6 +21,16 @@ use Twig_Loader_Filesystem;
 
 class FullIntegrationTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var StreamSelectLoop
+     */
+    private $loop;
+
+    /**
+     * @var DNode
+     */
+    private $dnode;
+
     public function setDnode($dnode, $loop)
     {
         $this->dnode = $dnode;
@@ -29,8 +40,7 @@ class FullIntegrationTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->arrayLoader = new Twig_Loader_Array(array());
-        $this->env = new Twig_Environment();
-        $this->env->addExtension(new Twig_Extension_Core());
+        $this->env = new Twig_Environment($this->arrayLoader);
         $this->env->addExtension(new TwigJsExtension());
         $this->env->setLoader(
             new Twig_Loader_Chain(
@@ -60,12 +70,7 @@ class FullIntegrationTest extends PHPUnit_Framework_TestCase
                 $javascript .= $this->compileTemplate($twig, $name);
             }
             $expectedOutput = trim($match[3], "\n ");
-            try {
-                $renderedOutput = $this->renderTemplate('index', $javascript, $templateParameters);
-            } catch (Exception $e) {
-                $this->markTestSkipped($e->getMessage());
-            }
-
+            $renderedOutput = $this->renderTemplate('index', $javascript, $templateParameters);
             $this->assertEquals($expectedOutput, $renderedOutput);
         }
     }
@@ -131,7 +136,8 @@ class FullIntegrationTest extends PHPUnit_Framework_TestCase
 
     private function compileTemplate($source, $name)
     {
-        $javascript = $this->env->compileSource($source, $name);
+        $source = new \Twig_Source($source, $name);
+        $javascript = $this->env->compileSource($source);
         return $javascript;
     }
 

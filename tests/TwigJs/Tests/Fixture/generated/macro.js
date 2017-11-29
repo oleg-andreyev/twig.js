@@ -43,7 +43,7 @@ macro.prototype.render_ = function(sb, context, blocks) {
  * @param {*} opt_arg2
  * @return {string}
  */
-macro.prototype.getmacro_test = function(opt_arg1, opt_arg2) {
+macro.prototype.macro_macro_test = function(opt_arg1, opt_arg2) {
     var context = twig.extend({}, {"arg1":opt_arg1,"arg2":opt_arg2}, this.env_.getGlobals());
 
     var sb = new twig.StringBuffer;
@@ -55,7 +55,7 @@ macro.prototype.getmacro_test = function(opt_arg1, opt_arg2) {
     sb.append(twig.filter.escape(this.env_, opt_arg1, "html", null, true));
     sb.append("\n    ");
     // line 4
-    if ((!twig.empty(("arg3" in context ? context["arg3"] : null)))) {
+    if (!(twig.empty(("arg3" in context ? context["arg3"] : null)))) {
         sb.append(twig.filter.escape(this.env_, ("arg3" in context ? context["arg3"] : null), "html", null, true));
     }
 

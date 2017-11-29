@@ -2,6 +2,7 @@
 
 namespace TwigJs\Tests;
 
+use Twig_Loader_Array;
 use TwigJs\Twig\TwigJsExtension;
 use TwigJs\JsCompiler;
 
@@ -12,17 +13,18 @@ class TemplateGenerationTest extends \PHPUnit_Framework_TestCase
      */
     public function testGenerate($inputFile, $outputFile)
     {
-        $env = new \Twig_Environment();
-        $env->addExtension(new \Twig_Extension_Core());
+        $this->arrayLoader = new Twig_Loader_Array(array());
+        $env = new \Twig_Environment($this->arrayLoader);
         $env->addExtension(new TwigJsExtension());
         $env->setLoader(new \Twig_Loader_Filesystem(__DIR__.'/Fixture/templates'));
         $env->setCompiler(new JsCompiler($env));
 
         $source = file_get_contents($inputFile);
+        $source = new \Twig_Source($source, $inputFile);
 
         $this->assertEquals(
             file_get_contents($outputFile),
-            $env->compileSource($source, $inputFile)
+            $env->compileSource($source)
         );
     }
 
@@ -44,6 +46,7 @@ class TemplateGenerationTest extends \PHPUnit_Framework_TestCase
                 __DIR__.'/Fixture/generated/'.basename($file, '.twig').'.js',
             );
         }
+
 
         return $tests;
     }
