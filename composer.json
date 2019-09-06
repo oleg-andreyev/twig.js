@@ -2,7 +2,9 @@
     "name": "jms/twig-js",
     "type": "library",
     "description": "twig.js, flexible, secure, and high-performance templating engine for Javascript",
-    "keywords": ["templating"],
+    "keywords": [
+        "templating"
+    ],
     "license": "Apache2",
     "authors": [
         {
@@ -11,20 +13,20 @@
         }
     ],
     "require": {
-        "php": ">=5.3.2",
-        "twig/twig": "^1.25"
+        "php": ">=7.0",
+        "twig/twig": "^1.25",
+        "symfony/phpunit-bridge": "^4.3"
     },
-
     "require-dev": {
         "dnode/dnode": "dev-master",
-        "phpunit/phpunit": "3.7.*@dev",
         "squizlabs/php_codesniffer": "1.*"
     },
-
     "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {
-        "psr-0": { "TwigJs": "src/" }
+        "psr-4": {
+            "TwigJs\\": "src/"
+        }
     },
     "extra": {
         "branch-alias": {

@@ -1,7 +1,24 @@
 language: php
+
+node_js:
+  - 7
+
 php:
-  - 5.3
-  - 5.6
   - 7.0
+  - 7.1
+  - 7.2
+  - 7.3
+
 sudo: false
-script: make test
+
+install:
+  - composer install
+  - npm install
+  - ./vendor/bin/simple-phpunit install
+
+before_script:
+  - node tests-js/dnode.js &
+
+script:
+  - ./vendor/bin/simple-phpunit -v
+  - ./node_modules/.bin/mocha --require tests-js/bootstrap.js tests-js/twig/* tests-js/twig/*/*
