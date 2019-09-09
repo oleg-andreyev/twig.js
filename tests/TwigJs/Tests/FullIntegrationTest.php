@@ -48,8 +48,7 @@ class FullIntegrationTest extends TestCase
     public function setUp()
     {
         $this->arrayLoader = new Twig_Loader_Array(array());
-        $this->env = new Twig_Environment();
-        $this->env->addExtension(new Twig_Extension_Core());
+        $this->env = new Twig_Environment($this->arrayLoader);
         $this->env->addExtension(new TwigJsExtension());
         $this->env->setLoader(
             new Twig_Loader_Chain(
