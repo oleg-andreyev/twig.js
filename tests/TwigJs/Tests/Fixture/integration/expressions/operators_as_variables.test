@@ -8,8 +8,7 @@ Twig allows to use named operators as variable names
 {{ is }}
 --DATA--
 return { matches: [1, 2, 3], in: "in", is: "is" }
---EXPECT--
-1
+--EXPECT--1
 2
 3
 in

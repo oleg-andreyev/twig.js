@@ -5,7 +5,7 @@ namespace TwigJs\Tests;
 use TwigJs\Twig\TwigJsExtension;
 use TwigJs\JsCompiler;
 
-class TemplateGenerationTest extends \PHPUnit_Framework_TestCase
+class TemplateGenerationTest extends \TwigJs\Tests\TestCase
 {
     /**
      * @dataProvider getGenerationTests
@@ -20,9 +20,14 @@ class TemplateGenerationTest extends \PHPUnit_Framework_TestCase
 
         $source = file_get_contents($inputFile);
 
+        $expected = file_get_contents($outputFile);
+        $actual = $env->compileSource($source, $inputFile);
+
+        $expected = \str_replace("\r\n", "\n", $expected);
+
         $this->assertEquals(
-            file_get_contents($outputFile),
-            $env->compileSource($source, $inputFile)
+            $expected,
+            $actual
         );
     }
 

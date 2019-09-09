@@ -9,8 +9,8 @@ Twig supports array notation
 {{ {0: 1, 'foo': 'bar'}|join(',') }}
 {{ {0: 1, 'foo': 'bar'}|keys|join(',') }}
 
-{{ {0: 1, foo: 'bar'}|join(',') }}
-{{ {0: 1, foo: 'bar'}|keys|join(',') }}
+{{ {0: 1, 'foo': 'bar'}|join(',') }}
+{{ {0: 1, 'foo': 'bar'}|keys|join(',') }}
 
 {# nested arrays #}
 {% set a = [1, 2, [1, 2], {'foo': {'foo': 'bar'}}] %}

@@ -4,7 +4,7 @@ namespace TwigJs\Tests\Twig;
 
 use TwigJs\Twig\TwigJsExtension;
 
-class IntegrationTest extends \PHPUnit_Framework_TestCase
+class IntegrationTest extends \TwigJs\Tests\TestCase
 {
     public function testNameIsSetOnModule()
     {

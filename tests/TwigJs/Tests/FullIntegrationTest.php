@@ -4,7 +4,6 @@ namespace TwigJs\Tests;
 
 use DNode;
 use Exception;
-use PHPUnit_Framework_TestCase;
 use React;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -18,12 +17,32 @@ use Twig_Loader_Array;
 use Twig_Loader_Chain;
 use Twig_Loader_Filesystem;
 
-class FullIntegrationTest extends PHPUnit_Framework_TestCase
+class FullIntegrationTest extends TestCase
 {
-    public function setDnode($dnode, $loop)
+    private static $loop;
+    private static $dnode;
+
+    public static function setUpBeforeClass()
     {
-        $this->dnode = $dnode;
-        $this->loop = $loop;
+        self::$dnode = new DNode\DNode(self::$loop = new React\EventLoop\StreamSelectLoop());
+    }
+
+    public static function tearDownAfterClass()
+    {
+        $exit = function ($remote, $connection) {
+            $remote->exit(function () use ($connection) {
+                //$connection->end();
+            });
+        };
+
+        self::$dnode->on('error', function ($e) {
+            // Do nothing.
+            // This error means the dnode server isn't running, so it doesn't
+            // matter that we can't connect to it in order to shut it down.
+        });
+
+        self::$dnode->connect(7070, $exit);
+        self::$loop->run();
     }
 
     public function setUp()
@@ -50,21 +69,25 @@ class FullIntegrationTest extends PHPUnit_Framework_TestCase
     public function integrationTest($file, $message, $condition, $templates, $exception, $outputs)
     {
         foreach ($outputs as $match) {
+            // data
             $templateParameters = $match[1];
-            $templateSource = $templates['index.twig'];
             $javascript = '';
             foreach ($templates as $name => $twig) {
                 $this->arrayLoader->setTemplate($name, $twig);
             }
+
             foreach ($templates as $name => $twig) {
                 $javascript .= $this->compileTemplate($twig, $name);
             }
+
             $expectedOutput = trim($match[3], "\n ");
             try {
                 $renderedOutput = $this->renderTemplate('index', $javascript, $templateParameters);
             } catch (Exception $e) {
                 $this->markTestSkipped($e->getMessage());
             }
+
+            $expectedOutput = \str_replace("\r\n", "\n", $expectedOutput);
 
             $this->assertEquals($expectedOutput, $renderedOutput);
         }
@@ -138,13 +161,14 @@ class FullIntegrationTest extends PHPUnit_Framework_TestCase
     private function renderTemplate($name, $javascript, $parameters)
     {
         $output = '';
-        $this->dnode->connect(7070, function ($remote, $connection) use ($name, $javascript, $parameters, &$output) {
+        self::$dnode->connect(7070, function ($remote, $connection) use ($name, $javascript, $parameters, &$output) {
             $remote->render($name, $javascript, $parameters, function ($rendered) use ($connection, &$output) {
                 $output = trim($rendered, "\n ");
                 $connection->end();
             });
         });
-        $this->loop->run();
+        self::$loop->run();
+
         return $output;
     }
 }

@@ -4,7 +4,7 @@ namespace TwigJs\Tests\Twig;
 
 use TwigJs\Twig\TwigJsTokenParser;
 
-class TwigJsTokenParserTest extends \PHPUnit_Framework_TestCase
+class TwigJsTokenParserTest extends \TwigJs\Tests\TestCase
 {
     public function testParse()
     {

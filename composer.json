@@ -14,7 +14,7 @@
     ],
     "require": {
         "php": ">=7.0",
-        "twig/twig": "^1.25",
+        "twig/twig": "~1.25|~2.0",
         "symfony/phpunit-bridge": "^4.3"
     },
     "require-dev": {
@@ -25,7 +25,8 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "TwigJs\\": "src/"
+            "TwigJs\\Tests\\": "tests/TwigJs/Tests",
+            "TwigJs\\": "src/TwigJs"
         }
     },
     "extra": {
