@@ -9,7 +9,7 @@ class TwigJsTokenParserTest extends \TwigJs\Tests\TestCase
     public function testParse()
     {
         $env = $this->getEnv();
-        $stream = $env->tokenize('{% twig_js name="foo" %}');
+        $stream = $env->tokenize(new \Twig_Source('{% twig_js name="foo" %}', 'foo'));
         $token = $env->parse($stream)->getNode('body')->getNode(0);
 
         $this->assertInstanceOf('TwigJs\Twig\TwigJsNode', $token);

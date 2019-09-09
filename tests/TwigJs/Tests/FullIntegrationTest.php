@@ -19,8 +19,14 @@ use Twig_Loader_Filesystem;
 
 class FullIntegrationTest extends TestCase
 {
+    /** @var \React\EventLoop\StreamSelectLoop */
     private static $loop;
+    /** @var DNode\DNode */
     private static $dnode;
+    /** @var Twig_Loader_Array */
+    private $arrayLoader;
+    /** @var Twig_Environment */
+    private $env;
 
     public static function setUpBeforeClass()
     {
@@ -153,8 +159,7 @@ class FullIntegrationTest extends TestCase
 
     private function compileTemplate($source, $name)
     {
-        $javascript = $this->env->compileSource($source, $name);
-        return $javascript;
+        return $this->env->compileSource(new \Twig_Source($source, $name));
     }
 
     private function renderTemplate($name, $javascript, $parameters)

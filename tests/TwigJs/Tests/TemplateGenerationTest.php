@@ -12,10 +12,8 @@ class TemplateGenerationTest extends \TwigJs\Tests\TestCase
      */
     public function testGenerate($inputFile, $outputFile)
     {
-        $env = new \Twig_Environment();
-        $env->addExtension(new \Twig_Extension_Core());
+        $env = new \Twig_Environment(new \Twig_Loader_Filesystem(__DIR__.'/Fixture/templates'));
         $env->addExtension(new TwigJsExtension());
-        $env->setLoader(new \Twig_Loader_Filesystem(__DIR__.'/Fixture/templates'));
         $env->setCompiler(new JsCompiler($env));
 
         $source = file_get_contents($inputFile);
