@@ -93,12 +93,12 @@ class JsCompiler extends \Twig_Compiler
     public $templateFunctionName;
 
     /** Map for local variables */
-    public $localVarMap = [];
+    public $localVarMap = array();
 
-    private $defines = [];
+    private $defines = array();
 
-    private $scopes         = [];
-    private $scopeVariables = [];
+    private $scopes         = array();
+    private $scopeVariables = array();
     private $functionNamingStrategy;
 
     private $typeCompilers;
@@ -111,7 +111,7 @@ class JsCompiler extends \Twig_Compiler
     public function __construct(\Twig_Environment $env) {
         parent::__construct($env);
 
-        $this->typeCompilers = [
+        $this->typeCompilers = array(
             'Twig\Node\Node'                   => new NodeCompiler(),
             'Twig\Node\BodyNode'               => new BodyCompiler(),
             'Twig\Node\ModuleNode'             => new ModuleCompiler\GoogleCompiler(),
@@ -130,6 +130,7 @@ class JsCompiler extends \Twig_Compiler
             'Twig\Node\AutoEscapeNode'         => new AutoEscapeCompiler(),
             'Twig\Node\ImportNode'             => new ImportCompiler(),
             'Twig\Node\MacroNode'              => new MacroCompiler(),
+            'Twig\Node\DoNode'                 => new DoCompiler(),
 
             'Twig\Node\Expression\TempNameExpression'           => new TempNameCompiler(),
             'Twig\Node\Expression\DefaultFilterExpression'      => new DefaultFilterCompiler(),
@@ -183,10 +184,9 @@ class JsCompiler extends \Twig_Compiler
             'Twig\Node\Expression\Test\NullTest'        => new Compiler\Expression\Test\NullCompiler(),
             'Twig\Node\Expression\Test\OddTest'         => new Compiler\Expression\Test\OddCompiler(),
             'Twig\Node\Expression\Test\SameasTest'      => new Compiler\Expression\Test\SameasCompiler(),
+        );
 
-        ];
-
-        $this->testCompilers = [
+        $this->testCompilers = array(
             'defined'     => new DefinedCompiler(),
             'divisibleby' => new DivisibleByCompiler(),
             'empty'       => new EmptyCompiler(),
@@ -195,10 +195,10 @@ class JsCompiler extends \Twig_Compiler
             'null'        => new NullCompiler(),
             'odd'         => new OddCompiler(),
             'sameas'      => new SameAsCompiler(),
-        ];
+        );
 
-        $this->filterCompilers = [];
-        $this->filterFunctions = [
+        $this->filterCompilers = array();
+        $this->filterFunctions = array(
             '_default'    => 'twig.filter.def',
             'abs'         => 'twig.filter.abs',
             'batch'       => 'twig.filter.batch',
@@ -221,14 +221,14 @@ class JsCompiler extends \Twig_Compiler
             'trim'        => 'twig.filter.trim',
             'upper'       => 'twig.filter.upper',
             'url_encode'  => 'encodeURIComponent',
-        ];
+        );
 
-        $this->functionMap = [
+        $this->functionMap = array(
             'max'    => 'twig.functions.max',
             'min'    => 'twig.functions.min',
             'random' => 'twig.functions.random',
             'range'  => 'twig.range',
-        ];
+        );
     }
 
     public function setDefines(array $defines) {
