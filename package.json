@@ -1,9 +1,11 @@
 {
   "devDependencies": {
-    "dnode": "1.2.0",
-    "mocha": "1.15.1",
-    "should": "2.1.1",
-    "sinon": "1.7.3"
+    "dnode": "^1.2.2",
+    "mocha": "^6.2.0",
+    "nan": "^2.14.0",
+    "should": "^13.2.3",
+    "sinon": "^7.4.2",
+    "weak": "^1.0.1"
   },
   "scripts": {
     "test": "mocha --require test/bootstrap.js test/*.js test/*/*.js test/*/*/*.js"

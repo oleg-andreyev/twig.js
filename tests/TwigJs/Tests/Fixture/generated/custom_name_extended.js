@@ -6,9 +6,8 @@
  * @suppress {checkTypes|fileoverviewTags}
  */
 
-goog.provide('bar');
-
 goog.require('twig');
+goog.provide('twig.templates');
 goog.require('twig.filter');
 
 /**

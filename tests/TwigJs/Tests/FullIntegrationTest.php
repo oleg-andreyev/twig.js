@@ -2,35 +2,61 @@
 
 namespace TwigJs\Tests;
 
-use DNode;
+use DNode\DNode;
 use Exception;
-use PHPUnit_Framework_TestCase;
-use React;
+use React\EventLoop\StreamSelectLoop;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RecursiveRegexIterator;
 use RegexIterator;
-use TwigJs\Twig\TwigJsExtension;
-use TwigJs\JsCompiler;
 use Twig_Environment;
-use Twig_Extension_Core;
 use Twig_Loader_Array;
 use Twig_Loader_Chain;
 use Twig_Loader_Filesystem;
+use TwigJs\Twig\TwigJsExtension;
+use TwigJs\JsCompiler;
 
-class FullIntegrationTest extends PHPUnit_Framework_TestCase
+class FullIntegrationTest extends TestCase
 {
-    public function setDnode($dnode, $loop)
+    /** @var StreamSelectLoop */
+    private static $loop;
+
+    /** @var DNode */
+    private static $dnode;
+
+    /** @var Twig_Loader_Array */
+    private $arrayLoader;
+
+    /** @var Twig_Environment */
+    private $env;
+
+    public static function setUpBeforeClass()
     {
-        $this->dnode = $dnode;
-        $this->loop = $loop;
+        self::$dnode = new DNode(self::$loop = new StreamSelectLoop());
+    }
+
+    public static function tearDownAfterClass()
+    {
+        $exit = function ($remote, $connection) {
+            $remote->exit(function () use ($connection) {
+                $connection->end();
+            });
+        };
+
+        self::$dnode->on('error', function ($e) {
+            // Do nothing.
+            // This error means the dnode server isn't running, so it doesn't
+            // matter that we can't connect to it in order to shut it down.
+        });
+
+        self::$dnode->connect(7070, $exit);
+        self::$loop->run();
     }
 
     public function setUp()
     {
         $this->arrayLoader = new Twig_Loader_Array(array());
-        $this->env = new Twig_Environment();
-        $this->env->addExtension(new Twig_Extension_Core());
+        $this->env = new Twig_Environment($this->arrayLoader);
         $this->env->addExtension(new TwigJsExtension());
         $this->env->setLoader(
             new Twig_Loader_Chain(
@@ -65,6 +91,8 @@ class FullIntegrationTest extends PHPUnit_Framework_TestCase
             } catch (Exception $e) {
                 $this->markTestSkipped($e->getMessage());
             }
+
+            $expectedOutput = \str_replace("\r\n", "\n", $expectedOutput);
 
             $this->assertEquals($expectedOutput, $renderedOutput);
         }
@@ -131,20 +159,20 @@ class FullIntegrationTest extends PHPUnit_Framework_TestCase
 
     private function compileTemplate($source, $name)
     {
-        $javascript = $this->env->compileSource($source, $name);
-        return $javascript;
+        return $this->env->compileSource(new \Twig_Source($source, $name));
     }
 
     private function renderTemplate($name, $javascript, $parameters)
     {
         $output = '';
-        $this->dnode->connect(7070, function ($remote, $connection) use ($name, $javascript, $parameters, &$output) {
+        self::$dnode->connect(7070, function ($remote, $connection) use ($name, $javascript, $parameters, &$output) {
             $remote->render($name, $javascript, $parameters, function ($rendered) use ($connection, &$output) {
                 $output = trim($rendered, "\n ");
                 $connection->end();
             });
         });
-        $this->loop->run();
+        self::$loop->run();
+
         return $output;
     }
 }

@@ -209,11 +209,19 @@ abstract class ModuleCompiler
 
     protected function compileGetTemplateName(JsCompiler $compiler, \Twig_NodeInterface $node)
     {
+        $templateName = $node->getAttribute('filename');
+        $templateName = basename($templateName, '.twig');
+        $templateName = str_replace(':', '.', $templateName);
+        $templateName = preg_replace('/\.+/', '.', $templateName);
+        $templateName = trim($templateName, '.');
+
+        $templateName = $node->hasAttribute('twig_js_name') ? $node->getAttribute('twig_js_name') : $templateName;
+
         $compiler
             ->write("/**\n", " * @inheritDoc\n", " */\n")
             ->write($this->functionName.".prototype.getTemplateName = function() {\n")
             ->indent()
-            ->write('return '.json_encode($this->functionName).";\n")
+            ->write('return '. json_encode($templateName).";\n")
             ->outdent()
             ->write("};\n\n")
         ;

@@ -1,19 +1,22 @@
-var fs = require('fs')
-  , dnode = require('dnode')
-  , twigSource = fs.readFileSync('./twig.dev.js', 'UTF-8')
-  , window = {};
-eval(twigSource);
+var fs = require("fs"),
+    dnode = require("dnode"),
+    vm = require("vm"),
+    twigSource = fs.readFileSync("./twig.dev.js", "UTF-8"),
+    context = vm.createContext({ window: {} });
+
+vm.runInContext(twigSource, context);
+
 var server = dnode(function (remote, conn) {
     this.render = function (name, source, parameters, cb) {
-      eval(source);
-      parameters = eval("(function (){" + parameters + "}());");
-      cb(window.Twig.render(eval(name), parameters));
+        vm.runInContext(source, context);
+        parameters = vm.runInContext("(function (){" + parameters + "}());", context);
+        cb(context.window.Twig.render(context.twig.templates[name], parameters));
     };
     this.exit = function (cb) {
-      cb();
-      setTimeout(function() {
-        process.exit(0);
-      }, 100);
+        cb();
+        setTimeout(function () {
+            process.exit(0);
+        }, 100);
     };
 });
 server.listen(7070);

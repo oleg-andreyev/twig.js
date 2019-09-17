@@ -12,19 +12,19 @@
     ],
     "require": {
         "php": ">=5.3.2",
-        "twig/twig": "^1.25"
+        "twig/twig": "^1.34.0@stable"
     },
-
     "require-dev": {
-        "dnode/dnode": "dev-master",
-        "phpunit/phpunit": "3.7.*@dev",
-        "squizlabs/php_codesniffer": "1.*"
+        "dnode/dnode": "v0.2.0",
+        "symfony/phpunit-bridge": "^4.3"
     },
-
     "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {
-        "psr-0": { "TwigJs": "src/" }
+        "psr-4": {
+            "TwigJs\\": "src/TwigJs",
+            "TwigJs\\Tests\\": "tests/TwigJs/Tests"
+        }
     },
     "extra": {
         "branch-alias": {
