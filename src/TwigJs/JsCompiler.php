@@ -133,6 +133,7 @@ class JsCompiler extends \Twig_Compiler
             'Twig\Node\MacroNode'              => new MacroCompiler(),
             'Twig\Node\DoNode'                 => new DoCompiler(),
 
+            'Twig\Node\Expression\InlinePrint'                  => new InlinePrint(),
             'Twig\Node\Expression\TempNameExpression'           => new TempNameCompiler(),
             'Twig\Node\Expression\DefaultFilterExpression'      => new DefaultFilterCompiler(),
             'Twig\Node\Expression\ExtensionReferenceExpression' => new ExpressionExtensionReferenceCompiler(),
