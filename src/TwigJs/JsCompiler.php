@@ -392,7 +392,7 @@ class JsCompiler extends \Twig_Compiler
     public function addDebugInfo(\Twig_NodeInterface $node)
     {
         if ($node->getTemplateLine() != $this->lastLine) {
-            $this->write(sprintf("/* line %d\n */", $node->getTemplateLine()));
+            $this->write(sprintf("/* line %d */\n", $node->getTemplateLine()));
 
             // when mbstring.func_overload is set to 2
             // mb_substr_count() replaces substr_count()
