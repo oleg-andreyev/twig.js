@@ -68,6 +68,7 @@ use TwigJs\Compiler\ForLoopCompiler;
 use TwigJs\Compiler\IfCompiler;
 use TwigJs\Compiler\ImportCompiler;
 use TwigJs\Compiler\IncludeCompiler;
+use TwigJs\Compiler\InlinePrint;
 use TwigJs\Compiler\MacroCompiler;
 use TwigJs\Compiler\ModuleCompiler;
 use TwigJs\Compiler\NodeCompiler;
