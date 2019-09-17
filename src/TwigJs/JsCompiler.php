@@ -22,6 +22,7 @@ use TwigJs\Compiler\AutoEscapeCompiler;
 use TwigJs\Compiler\BlockCompiler;
 use TwigJs\Compiler\BlockReferenceCompiler;
 use TwigJs\Compiler\BodyCompiler;
+use TwigJs\Compiler\DoCompiler;
 use TwigJs\Compiler\Expression\ArrayCompiler;
 use TwigJs\Compiler\Expression\AssignNameCompiler;
 use TwigJs\Compiler\Expression\Binary\AddCompiler;
