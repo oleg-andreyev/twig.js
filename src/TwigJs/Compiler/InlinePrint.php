@@ -16,7 +16,7 @@ class InlinePrint implements \TwigJs\TypeCompilerInterface
             ->addDebugInfo($node)
             ->write('sb.append(')
             ->subcompile($node->getNode('node'))
-            ->raw(");\n")
+            ->raw(')')
         ;
     }
 }
