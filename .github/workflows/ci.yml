@@ -56,8 +56,8 @@ jobs:
         uses: actions/cache@v2.1.3
         with:
           path: ${{ steps.npm-cache.outputs.directory }}
-          key: ${{ matrix.php }}-npm-${{ hashFiles('**/npm-shrinkwrap.json') }}
-          restore-keys: ${{ matrix.php }}-npm-
+          key: npm-${{ hashFiles('**/npm-shrinkwrap.json') }}
+          restore-keys: npm-${{ hashFiles('**/npm-shrinkwrap.json') }}
 
       - name: Install dependencies
         run: |
