@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler\Expression\Binary;
 
+use Twig\Node\Expression\Binary\ConcatBinary;
+use Twig\Node\Node;
 use TwigJs\Compiler\Expression\BinaryCompiler;
 use TwigJs\JsCompiler;
 
@@ -25,15 +27,16 @@ class ConcatCompiler extends BinaryCompiler
 {
     public function getType()
     {
-        return 'Twig_Node_Expression_Binary_Concat';
+        return ConcatBinary::class;
     }
 
-    protected function operator(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function operator(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Expression_Binary_Concat) {
+        if (!$node instanceof ConcatBinary) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Twig_Node_Expression_Binary_Concat, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    ConcatBinary::class,
                     get_class($node)
                 )
             );

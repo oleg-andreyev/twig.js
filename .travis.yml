@@ -17,7 +17,7 @@ install:
   - ./vendor/bin/simple-phpunit install
 
 before_script:
-  - node tests-js/dnode.js &
+  - node tests-js/json-rpc.js &
 
 script:
   - ./vendor/bin/simple-phpunit -v

@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler;
 
+use Twig\Node\Node;
+use Twig\Node\PrintNode;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -25,15 +27,16 @@ class PrintCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_Print';
+        return PrintNode::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Print) {
+        if (!$node instanceof PrintNode) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Print, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    PrintNode::class,
                     get_class($node)
                 )
             );

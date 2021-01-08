@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler\Expression\Unary;
 
+use Twig\Node\Expression\Unary\NotUnary;
+use Twig\Node\Node;
 use TwigJs\Compiler\Expression\UnaryCompiler;
 use TwigJs\JsCompiler;
 
@@ -25,15 +27,16 @@ class NotCompiler extends UnaryCompiler
 {
     public function getType()
     {
-        return 'Twig_Node_Expression_Unary_Not';
+        return NotUnary::class;
     }
 
-    protected function operator(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function operator(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Expression_Unary_Not) {
+        if (!$node instanceof NotUnary) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Twig_Node_Expression_Unary_Not, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    NotUnary::class,
                     get_class($node)
                 )
             );

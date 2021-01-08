@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler\Expression;
 
+use Twig\Node\Expression\ArrayExpression;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -25,14 +27,18 @@ class ArrayCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_Expression_Array';
+        return ArrayExpression::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Expression_Array) {
+        if (!$node instanceof ArrayExpression) {
             throw new \RuntimeException(
-                sprintf('$node must be an instanceof of \Expression_Array, but got "%s".', get_class($node))
+                sprintf(
+                    '$node must be an instanceof of %s, but got "%s".',
+                    ArrayExpression::class,
+                    get_class($node)
+                )
             );
         }
 

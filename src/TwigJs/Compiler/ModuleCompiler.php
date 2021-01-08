@@ -1,35 +1,40 @@
 <?php
 namespace TwigJs\Compiler;
 
+use Twig\Node\BlockReferenceNode;
+use Twig\Node\ModuleNode;
+use Twig\Node\Node;
+use Twig\Node\TextNode;
 use TwigJs\JsCompiler;
-use Twig_NodeInterface;
 
 abstract class ModuleCompiler
 {
     protected $functionName;
 
-    abstract protected function compileClassHeader(JsCompiler $compiler, Twig_NodeInterface $node);
-    abstract protected function compileClassFooter(JsCompiler $compiler, Twig_NodeInterface $node);
+    abstract protected function compileClassHeader(JsCompiler $compiler, Node $node);
+    abstract protected function compileClassFooter(JsCompiler $compiler, Node $node);
 
     public function getType()
     {
-        return 'Twig_Node_Module';
+        return ModuleNode::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Module) {
+        if (!$node instanceof ModuleNode) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Module, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    ModuleNode::class,
                     get_class($node)
                 )
             );
         }
+
         $this->compileTemplate($compiler, $node);
     }
 
-    protected function compileTemplate(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function compileTemplate(JsCompiler $compiler, Node $node)
     {
         $this->compileClassHeader($compiler, $node);
 
@@ -48,7 +53,7 @@ abstract class ModuleCompiler
         $this->compileClassFooter($compiler, $node);
     }
 
-    protected function compileGetParent(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function compileGetParent(JsCompiler $compiler, Node $node)
     {
         $compiler
             ->write("/**\n", " * @inheritDoc\n", " */\n")
@@ -74,7 +79,7 @@ abstract class ModuleCompiler
         ;
     }
 
-    protected function compileDisplayBody(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function compileDisplayBody(JsCompiler $compiler, Node $node)
     {
         $compiler
             ->enterScope()
@@ -89,7 +94,7 @@ abstract class ModuleCompiler
         }
     }
 
-    protected function compileConstructor(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function compileConstructor(JsCompiler $compiler, Node $node)
     {
         $compiler->raw("\n");
 
@@ -184,7 +189,7 @@ abstract class ModuleCompiler
         }
     }
 
-    protected function compileDisplayHeader(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function compileDisplayHeader(JsCompiler $compiler, Node $node)
     {
         $compiler
             ->write("/**\n", " * @inheritDoc\n", " */\n")
@@ -194,7 +199,7 @@ abstract class ModuleCompiler
         ;
     }
 
-    protected function compileDisplayFooter(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function compileDisplayFooter(JsCompiler $compiler, Node $node)
     {
         $compiler
             ->outdent()
@@ -202,14 +207,14 @@ abstract class ModuleCompiler
         ;
     }
 
-    protected function compileMacros(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function compileMacros(JsCompiler $compiler, Node $node)
     {
         $compiler->subcompile($node->getNode('macros'));
     }
 
-    protected function compileGetTemplateName(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function compileGetTemplateName(JsCompiler $compiler, Node $node)
     {
-        $templateName = $node->getAttribute('filename');
+        $templateName = $node->getSourceContext()->getName();
         $templateName = basename($templateName, '.twig');
         $templateName = str_replace(':', '.', $templateName);
         $templateName = preg_replace('/\.+/', '.', $templateName);
@@ -221,13 +226,13 @@ abstract class ModuleCompiler
             ->write("/**\n", " * @inheritDoc\n", " */\n")
             ->write($this->functionName.".prototype.getTemplateName = function() {\n")
             ->indent()
-            ->write('return '. json_encode($templateName).";\n")
+            ->write('return '. json_encode($templateName, JSON_THROW_ON_ERROR) .";\n")
             ->outdent()
             ->write("};\n\n")
         ;
     }
 
-    protected function compileIsTraitable(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function compileIsTraitable(JsCompiler $compiler, Node $node)
     {
         // A template can be used as a trait if all of the following is true:
         //   * it has no parent
@@ -239,7 +244,7 @@ abstract class ModuleCompiler
         $traitable = (!$node->hasNode('parent') || null === $node->getNode('parent')) && 0 === count($node->getNode('macros'));
         if ($traitable) {
             if (!count($nodes = $node->getNode('body'))) {
-                $nodes = new Twig_Node(array($node->getNode('body')));
+                $nodes = new Node(array($node->getNode('body')));
             }
 
             foreach ($nodes as $node) {
@@ -247,11 +252,11 @@ abstract class ModuleCompiler
                     continue;
                 }
 
-                if ($node instanceof Twig_Node_Text && ctype_space($node->getAttribute('data'))) {
+                if ($node instanceof TextNode && ctype_space($node->getAttribute('data'))) {
                     continue;
                 }
 
-                if ($node instanceof Twig_Node_BlockReference) {
+                if ($node instanceof BlockReferenceNode) {
                     continue;
                 }
 

@@ -2,19 +2,21 @@
 
 namespace TwigJs\Twig;
 
-class TwigJsExtension extends \Twig_Extension
+use Twig\Extension\AbstractExtension;
+
+class TwigJsExtension extends AbstractExtension
 {
-    public function getTokenParsers()
+    public function getTokenParsers(): array
     {
         return array(new TwigJsTokenParser());
     }
 
-    public function getNodeVisitors()
+    public function getNodeVisitors(): array
     {
         return array(new TwigJsNodeVisitor());
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'twig_js';
     }

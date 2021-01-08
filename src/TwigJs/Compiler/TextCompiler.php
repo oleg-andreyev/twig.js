@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler;
 
+use Twig\Node\Node;
+use Twig\Node\TextNode;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -25,15 +27,16 @@ class TextCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_Text';
+        return TextNode::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Text) {
+        if (!$node instanceof TextNode) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Text, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    TextNode::class,
                     get_class($node)
                 )
             );

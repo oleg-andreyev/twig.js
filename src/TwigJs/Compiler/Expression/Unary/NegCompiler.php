@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler\Expression\Unary;
 
+use Twig\Node\Expression\Unary\NegUnary;
+use Twig\Node\Node;
 use TwigJs\Compiler\Expression\UnaryCompiler;
 use TwigJs\JsCompiler;
 
@@ -25,15 +27,16 @@ class NegCompiler extends UnaryCompiler
 {
     public function getType()
     {
-        return 'Twig_Node_Expression_Unary_Neg';
+        return NegUnary::class;
     }
 
-    protected function operator(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function operator(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Expression_Unary_Neg) {
+        if (!$node instanceof NegUnary) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Expression_Unary_Neg, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    NegUnary::class,
                     get_class($node)
                 )
             );

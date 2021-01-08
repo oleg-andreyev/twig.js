@@ -11,6 +11,6 @@ FOOBAR
 return {}
 --EXPECT--
 FOO
-
 FOOBAR
+
 BAR

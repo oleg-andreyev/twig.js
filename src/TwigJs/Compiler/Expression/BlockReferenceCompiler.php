@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler\Expression;
 
+use Twig\Node\Expression\BlockReferenceExpression;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -25,15 +27,16 @@ class BlockReferenceCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_Expression_BlockReference';
+        return BlockReferenceExpression::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Expression_BlockReference) {
+        if (!$node instanceof BlockReferenceExpression) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Twig_Node_Expression_BlockReference, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    BlockReferenceExpression::class,
                     get_class($node)
                 )
             );

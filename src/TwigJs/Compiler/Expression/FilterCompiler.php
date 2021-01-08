@@ -18,6 +18,9 @@
 
 namespace TwigJs\Compiler\Expression;
 
+use Twig\Error\SyntaxError;
+use Twig\Node\Expression\FilterExpression;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -25,15 +28,16 @@ class FilterCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_Expression_Filter';
+        return FilterExpression::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Expression_Filter) {
+        if (!$node instanceof FilterExpression) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Twig_Node_Expression_Filter, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    FilterExpression::class,
                     get_class($node)
                 )
             );
@@ -41,13 +45,14 @@ class FilterCompiler implements TypeCompilerInterface
 
         $name = $node->getNode('filter')->getAttribute('value');
         if (false === $filter = $compiler->getEnvironment()->getFilter($name)) {
-            throw new \Twig_Error_Syntax(sprintf('The filter "%s" does not exist', $name), $node->getLine());
+            throw new SyntaxError(sprintf('The filter "%s" does not exist', $name), $node->getTemplateLine());
         }
 
-        if (($filterCompiler = $compiler->getFilterCompiler($name))
-                && false !== $filterCompiler->compile($compiler, $node)) {
+        if (($filterCompiler = $compiler->getFilterCompiler($name)) && false !== $filterCompiler->compile($compiler, $node)) {
             return;
-        } elseif ($functionName = $compiler->getFilterFunction($name)) {
+        }
+
+        if ($functionName = $compiler->getFilterFunction($name)) {
             $compiler->raw($functionName.'(');
         } else {
             $compiler

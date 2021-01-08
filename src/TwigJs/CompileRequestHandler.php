@@ -18,12 +18,14 @@
 
 namespace TwigJs;
 
+use Twig\Environment;
+
 class CompileRequestHandler
 {
     private $env;
     private $compiler;
 
-    public function __construct(\Twig_Environment $env, JsCompiler $compiler)
+    public function __construct(Environment $env, JsCompiler $compiler)
     {
         $this->env = $env;
         $this->compiler = $compiler;
@@ -37,7 +39,7 @@ class CompileRequestHandler
 
         try {
             if (!$source = $request->getSource()) {
-                $source = $this->env->getLoader()->getSource($request->getName());
+                $source = $this->env->getLoader()->getSourceContext($request->getName());
             }
 
             $compiled = $this->env->compileSource($source, $request->getName());

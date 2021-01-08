@@ -5,3 +5,5 @@ config.php
 vendor/
 tmp/
 node_modules/
+/composer.phar
+/.phpunit.result.cache

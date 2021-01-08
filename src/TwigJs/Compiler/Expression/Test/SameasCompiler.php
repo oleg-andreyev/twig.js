@@ -2,6 +2,9 @@
 
 namespace TwigJs\Compiler\Expression\Test;
 
+use Twig\Node\Expression\Test\SameasTest;
+use Twig\Node\Expression\TestExpression;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -9,26 +12,27 @@ class SameasCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_Expression_Test_Sameas';
+        return SameasTest::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Expression_Test_Sameas) {
+        if (!$node instanceof SameasTest) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Twig_Node_Expression_Test_Sameas, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    SameasTest::class,
                     get_class($node)
                 )
             );
         }
 
         $compiler->subcompile(
-            new \Twig_Node_Expression_Test(
+            new TestExpression(
                 $node->getNode('node'),
                 $node->getAttribute('name'),
                 $node->getNode('arguments'),
-                $node->getLine()
+                $node->getTemplateLine()
             )
         );
     }

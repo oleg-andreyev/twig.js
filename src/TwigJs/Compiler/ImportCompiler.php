@@ -18,6 +18,9 @@
 
 namespace TwigJs\Compiler;
 
+use Twig\Node\Expression\NameExpression;
+use Twig\Node\ImportNode;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -25,15 +28,16 @@ class ImportCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_Import';
+        return ImportNode::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Import) {
+        if (!$node instanceof ImportNode) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Twig_Node_Import, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    ImportNode::class,
                     get_class($node)
                 )
             );
@@ -46,7 +50,7 @@ class ImportCompiler implements TypeCompilerInterface
             ->raw(' = ')
         ;
 
-        if ($node->getNode('expr') instanceof \Twig_Node_Expression_Name && '_self' === $node->getNode('expr')->getAttribute('name')) {
+        if ($node->getNode('expr') instanceof NameExpression && '_self' === $node->getNode('expr')->getAttribute('name')) {
             $compiler->raw("this");
         } else {
             $compiler

@@ -2,25 +2,25 @@
 
 namespace TwigJs\Compiler;
 
-use Twig\Node\DoNode;
 use Twig\Node\Node;
 use TwigJs\JsCompiler;
+use Twig\Node\Expression\InlinePrint;
 use TwigJs\TypeCompilerInterface;
 
-class DoCompiler implements TypeCompilerInterface
+class InlinePrintCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return DoNode::class;
+        return InlinePrint::class;
     }
 
     public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof DoNode) {
+        if (!$node instanceof InlinePrint) {
             throw new \RuntimeException(
                 sprintf(
                     '$node must be an instanceof of %s, but got "%s".',
-                    DoNode::class,
+                    InlinePrint::class,
                     get_class($node)
                 )
             );
@@ -28,9 +28,9 @@ class DoCompiler implements TypeCompilerInterface
 
         $compiler
             ->addDebugInfo($node)
-            ->write('')
-            ->subcompile($node->getNode('expr'))
-            ->raw(";\n")
+            ->write('sb.append(')
+            ->subcompile($node->getNode('node'))
+            ->raw(')')
         ;
     }
 }
