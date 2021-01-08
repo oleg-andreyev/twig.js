@@ -65,7 +65,7 @@ jobs:
           composer update --no-interaction --prefer-dist
           echo "::endgroup::"
 
-          echo "::group::npm update"
+          echo "::group::npm install"
           npm install
           echo "::endgroup::"
 
