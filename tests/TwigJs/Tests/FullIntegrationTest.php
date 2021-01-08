@@ -119,7 +119,7 @@ class FullIntegrationTest extends TestCase
 
         $section = 'TEST';
         $templateName = false;
-        $sectionText = [];
+        $sectionText = ['TEST' => ''];
 
         $sections = [
             'EXPECT', 'TEMPLATE', 'DATA'
