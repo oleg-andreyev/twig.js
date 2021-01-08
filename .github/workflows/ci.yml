@@ -74,7 +74,7 @@ jobs:
         run: "node tests-js/json-rpc.js &"
 
       - name: Run PHPUnit
-        run: ./vendor/bin/simple-phpunit -v
+        run: ./vendor/bin/phpunit -v
 
       - name: Run Mocha
         run: ./node_modules/.bin/mocha --require tests-js/bootstrap.js tests-js/twig/**.js
