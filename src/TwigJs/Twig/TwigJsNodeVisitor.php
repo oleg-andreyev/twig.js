@@ -5,13 +5,14 @@ namespace TwigJs\Twig;
 use Twig\Environment;
 use Twig\Node\ModuleNode;
 use Twig\Node\Node;
+use Twig\NodeVisitor\AbstractNodeVisitor;
 use Twig\NodeVisitor\NodeVisitorInterface;
 
-class TwigJsNodeVisitor implements NodeVisitorInterface
+class TwigJsNodeVisitor extends AbstractNodeVisitor
 {
     private $moduleNode;
 
-    public function enterNode(Node $node, Environment $env)
+    public function doEnterNode(Node $node, Environment $env)
     {
         if ($node instanceof ModuleNode) {
             return $this->moduleNode = $node;
@@ -20,7 +21,7 @@ class TwigJsNodeVisitor implements NodeVisitorInterface
         return $node;
     }
 
-    public function leaveNode(Node $node, Environment $env)
+    public function doLeaveNode(Node $node, Environment $env)
     {
         if ($node instanceof TwigJsNode) {
             if ($node->hasAttribute('name')) {
@@ -30,7 +31,7 @@ class TwigJsNodeVisitor implements NodeVisitorInterface
                 );
             }
 
-            return false;
+            return null;
         }
 
         return $node;
