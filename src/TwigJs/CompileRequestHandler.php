@@ -33,23 +33,13 @@ class CompileRequestHandler
 
     public function process(CompileRequest $request)
     {
-        $curCompiler = $this->env->getCompiler();
         $this->env->setCompiler($this->compiler);
         $this->compiler->setDefines($request->getDefines());
 
-        try {
-            if (!$source = $request->getSource()) {
-                $source = $this->env->getLoader()->getSourceContext($request->getName());
-            }
-
-            $compiled = $this->env->compileSource($source, $request->getName());
-            $this->env->setCompiler($curCompiler);
-
-            return $compiled;
-        } catch (\Exception $ex) {
-            $this->env->setCompiler($curCompiler);
-
-            throw $ex;
+        if (!$source = $request->getSource()) {
+            $source = $this->env->getLoader()->getSourceContext($request->getName());
         }
+
+        return $this->env->compileSource($source, $request->getName());
     }
 }
