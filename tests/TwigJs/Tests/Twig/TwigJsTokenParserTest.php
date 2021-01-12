@@ -2,10 +2,10 @@
 
 namespace TwigJs\Tests\Twig;
 
+use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
 use Twig\Source;
-use TwigJs\Tests\TestCase;
 use TwigJs\Twig\TwigJsTokenParser;
 use TwigJs\Twig\TwigJsNode;
 

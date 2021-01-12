@@ -2,6 +2,7 @@
 
 namespace TwigJs\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\Source;

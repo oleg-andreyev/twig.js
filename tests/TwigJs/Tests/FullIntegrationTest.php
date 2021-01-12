@@ -4,6 +4,7 @@ namespace TwigJs\Tests;
 
 use Datto\JsonRpc\Http\Client;
 use Datto\JsonRpc\Responses\ErrorResponse;
+use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RecursiveRegexIterator;
