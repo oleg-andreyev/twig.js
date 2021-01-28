@@ -152,6 +152,7 @@ class JsCompiler extends \Twig_Compiler
             'Twig\Node\Expression\GetAttrExpression'            => new GetAttrCompiler(),
             'Twig\Node\Expression\MacroCallExpression'          => new Compiler\Expression\MacroCallCompiler(),
             'Twig\Node\Expression\MethodCallExpression'         => new Compiler\Expression\MethodCallCompiler(),
+            'Twig\Node\Expression\NullCoalesceExpression'       => new Compiler\Expression\NullCoalesceExpression(),
 
             'Twig\Node\Expression\Binary\AddBinary'          => new AddCompiler(),
             'Twig\Node\Expression\Binary\AndBinary'          => new AndCompiler(),
