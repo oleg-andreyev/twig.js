@@ -50,13 +50,14 @@ class IncludeCompiler implements TypeCompilerInterface
 //         }
 
         if ($node->getNode('expr') instanceof \Twig_Node_Expression_Constant) {
-            $compiler->isTemplateName = true;
             $compiler
                 ->write("(new ")
+                ->write('twig.templates[')
                 ->subcompile($node->getNode('expr'))
+                ->raw(".replace('.twig', '')")
+                ->raw(']')
                 ->raw("(this.env_)).render_(sb, ")
             ;
-            $compiler->isTemplateName = false;
         } else {
             $compiler
                 ->write("(new ")
