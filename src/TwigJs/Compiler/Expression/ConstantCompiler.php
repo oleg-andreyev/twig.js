@@ -39,7 +39,7 @@ class ConstantCompiler implements TypeCompilerInterface
             );
         }
 
-        if ($compiler->isTemplateName || preg_match('/\.twig$/', $node->getAttribute('value'))) {
+        if ($compiler->isTemplateName) {
             $env = $compiler->getEnvironment();
             $source = $env->getLoader()->getSource($node->getAttribute('value'));
             $module = $env->parse($env->tokenize($source, $node->getAttribute('value')));

@@ -51,9 +51,10 @@ class ImportCompiler implements TypeCompilerInterface
         } else {
             $compiler
                 ->raw('this.env_.createTemplate(')
-                ->setTemplateName(true)
+                ->write('twig.templates[')
                 ->subcompile($node->getNode('expr'))
-                ->setTemplateName(false)
+                ->raw(".replace('.twig', '')")
+                ->raw(']')
                 ->raw(")")
             ;
         }
