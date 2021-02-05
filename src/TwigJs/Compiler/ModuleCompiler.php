@@ -61,10 +61,12 @@ abstract class ModuleCompiler
             $compiler->repr(false);
         } else {
             $compiler
+                ->setTemplateName(true)
                 ->write('twig.templates[')
                 ->subcompile($node->getNode('parent'))
                 ->raw(".replace('.twig', '')")
                 ->raw(']')
+                ->setTemplateName(false)
             ;
         }
 
