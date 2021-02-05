@@ -41,7 +41,7 @@ class ConstantCompiler implements TypeCompilerInterface
         }
 
         if ($compiler->isTemplateName) {
-            $compiler->raw(TemplateNameGenerator::generate($node->getAttribute('value')));
+            $compiler->repr(TemplateNameGenerator::generate($node->getAttribute('value')));
 
             return;
         }
