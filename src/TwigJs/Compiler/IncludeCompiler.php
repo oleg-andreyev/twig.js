@@ -53,21 +53,27 @@ class IncludeCompiler implements TypeCompilerInterface
 //             ;
 //         }
 
-        $compiler->isTemplateName = true;
+        $compiler->setTemplateName(true);
         if ($node->getNode('expr') instanceof ConstantExpression) {
             $compiler
                 ->write("(new ")
+                ->write('twig.templates[')
                 ->subcompile($node->getNode('expr'))
+                ->raw(".replace('.twig', '')")
+                ->raw(']')
                 ->raw("(this.env_)).render_(sb, ")
             ;
         } else {
             $compiler
                 ->write("(new ")
+                ->write('twig.templates[')
                 ->subcompile($node->getNode('expr'))
+                ->raw(".replace('.twig', '')")
+                ->raw(']')
                 ->raw("(this.env_)).render_(sb, ")
             ;
         }
-        $compiler->isTemplateName = false;
+        $compiler->setTemplateName(false);
 
         if (false === $node->getAttribute('only')) {
             if (!$node->hasNode('variables') || null === $node->getNode('variables')) {

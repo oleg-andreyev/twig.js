@@ -30,12 +30,6 @@ class DefaultFunctionNamingStrategy implements FunctionNamingStrategyInterface
             return sprintf(self::TWIG_TEMPLATES_NS, $module->getAttribute('twig_js_name'));
         }
 
-        $templateName = $module->getSourceContext()->getName();
-        $templateName = basename($templateName, '.twig');
-        $templateName = str_replace(':', '.', $templateName);
-        $templateName = preg_replace('/\.+/', '.', $templateName);
-        $templateName = trim($templateName, '.');
-
-        return sprintf(self::TWIG_TEMPLATES_NS, $templateName);
+        return sprintf(self::TWIG_TEMPLATES_NS, TemplateNameGenerator::generate($module->getAttribute('filename')));
     }
 }

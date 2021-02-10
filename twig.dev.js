@@ -1651,6 +1651,7 @@ twig.filter.title = function $twig$filter$title$($env$$, $value$$) {
 };
 twig.filter.trim = function $twig$filter$trim$($value$$, $opt_charactermask$$) {
   var $mask$$ = "\n ";
+  $value$$ += "";
   $opt_charactermask$$ && ($mask$$ = twig.pregQuote($opt_charactermask$$));
   $value$$ = $value$$.replace(RegExp("^[" + $mask$$ + "]+"), "");
   return $value$$ = $value$$.replace(RegExp("[" + $mask$$ + "]+$"), "")

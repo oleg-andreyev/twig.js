@@ -215,6 +215,7 @@ class JsCompiler extends Compiler
             ConstantExpression::class => new ConstantCompiler(),
             GetAttrExpression::class => new GetAttrCompiler(),
             MethodCallExpression::class => new MethodCallCompiler(),
+            'Twig\Node\Expression\NullCoalesceExpression' => new Compiler\Expression\NullCoalesceExpression(),
 
             AddBinary::class => new AddCompiler(),
             AndBinary::class => new AndCompiler(),
@@ -255,12 +256,13 @@ class JsCompiler extends Compiler
         $this->testCompilers = array(
             'defined' => new DefinedCompiler(),
             'divisibleby' => new DivisibleByCompiler(),
-            'empty' => new EmptyCompiler(),
-            'even' => new EvenCompiler(),
-            'none' => new NoneCompiler(),
-            'null' => new NullCompiler(),
-            'odd' => new OddCompiler(),
-            'sameas' => new SameAsCompiler(),
+            'empty'       => new EmptyCompiler(),
+            'even'        => new EvenCompiler(),
+            'none'        => new NoneCompiler(),
+            'null'        => new NullCompiler(),
+            'odd'         => new OddCompiler(),
+            'sameas'      => new SameAsCompiler(),
+            'same as'      => new SameAsCompiler(),
         );
 
         $this->filterCompilers = array();

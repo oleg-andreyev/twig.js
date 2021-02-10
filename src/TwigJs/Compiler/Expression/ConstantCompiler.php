@@ -21,6 +21,7 @@ namespace TwigJs\Compiler\Expression;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Node;
 use TwigJs\JsCompiler;
+use TwigJs\TemplateNameGenerator;
 use TwigJs\TypeCompilerInterface;
 
 class ConstantCompiler implements TypeCompilerInterface
@@ -42,12 +43,8 @@ class ConstantCompiler implements TypeCompilerInterface
             );
         }
 
-        if ($compiler->isTemplateName || preg_match('/\.twig$/', $node->getAttribute('value'))) {
-            $env = $compiler->getEnvironment();
-            $source = $env->getLoader()->getSourceContext($node->getAttribute('value'));
-            $module = $env->parse($env->tokenize($source, $node->getAttribute('value')));
-
-            $compiler->raw($compiler->getFunctionName($module));
+        if ($compiler->isTemplateName) {
+            $compiler->repr(TemplateNameGenerator::generate($node->getAttribute('value')));
 
             return;
         }
