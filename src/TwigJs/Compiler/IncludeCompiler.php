@@ -59,7 +59,6 @@ class IncludeCompiler implements TypeCompilerInterface
                 ->write("(new ")
                 ->write('twig.templates[')
                 ->subcompile($node->getNode('expr'))
-                ->raw(".replace('.twig', '')")
                 ->raw(']')
                 ->raw("(this.env_)).render_(sb, ")
             ;
@@ -68,7 +67,6 @@ class IncludeCompiler implements TypeCompilerInterface
                 ->write("(new ")
                 ->write('twig.templates[')
                 ->subcompile($node->getNode('expr'))
-                ->raw(".replace('.twig', '')")
                 ->raw(']')
                 ->raw("(this.env_)).render_(sb, ")
             ;
