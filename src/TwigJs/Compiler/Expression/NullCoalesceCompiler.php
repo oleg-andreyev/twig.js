@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigJs\Compiler\Expression;
 
+use Twig\Node\Expression\ConditionalExpression;
 use Twig\Node\Expression\NullCoalesceExpression;
 use Twig\Node\Node;
 use TwigJs\JsCompiler;
@@ -18,10 +19,11 @@ class NullCoalesceCompiler implements TypeCompilerInterface
 
     public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Expression_Conditional) {
+        if (!$node instanceof ConditionalExpression) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Expression_Conditional, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    ConditionalExpression::class,
                     get_class($node)
                 )
             );

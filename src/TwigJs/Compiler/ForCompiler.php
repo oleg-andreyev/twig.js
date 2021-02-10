@@ -78,23 +78,18 @@ class ForCompiler implements TypeCompilerInterface
             $compiler->write("var $iteratedName = false;\n");
         }
 
-        $compiler
-            ->write("var $loopName = {\n")
-            ->indent();
+        $loopData = [
+            'index0' => 0,
+            'index' => 1,
+            'first' => true
+        ];
 
         if ($count > 0) {
             $parentSuffix = ($count - 1 > 0) ? $count - 1 : '';
-
-            $compiler
-                ->write("'parent': loop$parentSuffix,\n");
+            $loopData['parent'] = "loop$parentSuffix";
         }
 
-        $compiler
-            ->write("'index0': 0,\n")
-            ->write("'index': 1,\n")
-            ->write("'first': true\n")
-            ->outdent()
-            ->write("};\n");
+        $compiler->write(sprintf('var %s = %s', $loopName, json_encode($loopData, JSON_THROW_ON_ERROR)));
 
         if (false === $node->getAttribute('ifexpr')) {
             $compiler

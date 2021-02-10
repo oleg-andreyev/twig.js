@@ -255,20 +255,19 @@ class JsCompiler extends Compiler
             SameasTest::class => new SameasCompiler()
         ];
 
-        $this->testCompilers = array(
+        $this->testCompilers = [
             'defined' => new DefinedCompiler(),
             'divisibleby' => new DivisibleByCompiler(),
-            'empty'       => new EmptyCompiler(),
-            'even'        => new EvenCompiler(),
-            'none'        => new NoneCompiler(),
-            'null'        => new NullCompiler(),
-            'odd'         => new OddCompiler(),
-            'sameas'      => new SameAsCompiler(),
-            'same as'      => new SameAsCompiler(),
-        );
+            'empty' => new EmptyCompiler(),
+            'even' => new EvenCompiler(),
+            'none' => new NoneCompiler(),
+            'null' => new NullCompiler(),
+            'odd' => new OddCompiler(),
+            'same as' => new SameAsCompiler(),
+        ];
 
-        $this->filterCompilers = array();
-        $this->filterFunctions = array(
+        $this->filterCompilers = [];
+        $this->filterFunctions = [
             '_default' => 'twig.filter.def',
             'abs' => 'twig.filter.abs',
             'batch' => 'twig.filter.batch',
@@ -291,14 +290,14 @@ class JsCompiler extends Compiler
             'trim' => 'twig.filter.trim',
             'upper' => 'twig.filter.upper',
             'url_encode' => 'encodeURIComponent',
-        );
+        ];
 
-        $this->functionMap = array(
+        $this->functionMap = [
             'max' => 'twig.functions.max',
             'min' => 'twig.functions.min',
             'random' => 'twig.functions.random',
             'range' => 'twig.range',
-        );
+        ];
     }
 
     public function setDefines(array $defines)
