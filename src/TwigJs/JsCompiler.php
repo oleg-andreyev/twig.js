@@ -61,6 +61,7 @@ use TwigJs\Compiler\Expression\FunctionCompiler;
 use TwigJs\Compiler\Expression\GetAttrCompiler;
 use TwigJs\Compiler\Expression\MethodCallCompiler;
 use TwigJs\Compiler\Expression\NameCompiler;
+use TwigJs\Compiler\Expression\NullCoalesceExpression as NullCoalesceExpressionCompiler;
 use TwigJs\Compiler\Expression\ParentCompiler;
 use TwigJs\Compiler\Expression\TempNameCompiler;
 use TwigJs\Compiler\Expression\TestCompiler;
@@ -152,6 +153,7 @@ use Twig\Node\Expression\Test\EvenTest;
 use Twig\Node\Expression\Test\NullTest;
 use Twig\Node\Expression\Test\OddTest;
 use Twig\Node\Expression\Test\SameasTest;
+use Twig\Node\Expression\NullCoalesceExpression;
 
 class JsCompiler extends Compiler
 {
@@ -205,17 +207,17 @@ class JsCompiler extends Compiler
             ConditionalExpression::class => new ConditionalCompiler(),
             ArrayExpression::class => new ArrayCompiler(),
             FunctionExpression::class => new FunctionCompiler(),
-            ParentExpression::class => new ParentCompiler(),
+            ParentExpression::class         => new ParentCompiler(),
             BlockReferenceExpression::class => new ExpressionBlockReferenceCompiler(),
-            AssignNameExpression::class => new AssignNameCompiler(),
-            TestExpression::class => new TestCompiler(),
-            NameExpression::class => new NameCompiler(),
-            FilterExpression::class => new FilterCompiler(),
-            DefaultFilter::class => new DefaultFilterCompiler(),
-            ConstantExpression::class => new ConstantCompiler(),
-            GetAttrExpression::class => new GetAttrCompiler(),
-            MethodCallExpression::class => new MethodCallCompiler(),
-            'Twig\Node\Expression\NullCoalesceExpression' => new Compiler\Expression\NullCoalesceExpression(),
+            AssignNameExpression::class     => new AssignNameCompiler(),
+            TestExpression::class           => new TestCompiler(),
+            NameExpression::class           => new NameCompiler(),
+            FilterExpression::class         => new FilterCompiler(),
+            DefaultFilter::class            => new DefaultFilterCompiler(),
+            ConstantExpression::class       => new ConstantCompiler(),
+            GetAttrExpression::class        => new GetAttrCompiler(),
+            MethodCallExpression::class     => new MethodCallCompiler(),
+            NullCoalesceExpression::class   => new NullCoalesceExpressionCompiler(),
 
             AddBinary::class => new AddCompiler(),
             AndBinary::class => new AndCompiler(),
