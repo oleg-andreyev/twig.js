@@ -90,8 +90,8 @@ class ForCompiler implements TypeCompilerInterface
         }
 
         $compiler
-            ->write(sprintf('var %s = %s', $loopName, json_encode($loopData, JSON_THROW_ON_ERROR)))
-            ->write(";\n");
+            ->write(sprintf('var %s = %s;', $loopName, json_encode($loopData, JSON_THROW_ON_ERROR)))
+            ->write('\n');
 
         if (false === $node->getAttribute('ifexpr')) {
             $compiler
