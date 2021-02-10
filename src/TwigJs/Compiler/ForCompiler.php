@@ -89,7 +89,9 @@ class ForCompiler implements TypeCompilerInterface
             $loopData['parent'] = "loop$parentSuffix";
         }
 
-        $compiler->write(sprintf('var %s = %s', $loopName, json_encode($loopData, JSON_THROW_ON_ERROR)));
+        $compiler
+            ->write(sprintf('var %s = %s', $loopName, json_encode($loopData, JSON_THROW_ON_ERROR)))
+            ->write(";\n");
 
         if (false === $node->getAttribute('ifexpr')) {
             $compiler
