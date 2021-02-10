@@ -1,10 +1,8 @@
 --TEST--
 Method call test for schmittjoh/twig.js#83
 --TEMPLATE--
-
 {{ object.getFoo() }}
 {{ object.get("attr") }}
-
 --DATA--
 return {
   object: {

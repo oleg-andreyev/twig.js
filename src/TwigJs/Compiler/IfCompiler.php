@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler;
 
+use Twig\Node\IfNode;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -28,14 +30,14 @@ class IfCompiler implements TypeCompilerInterface
         return 'Twig_Node_If';
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_If) {
+        if (!$node instanceof IfNode) {
             throw new \RuntimeException(sprintf('$node must be an instanceof of \If, but got "%s".', get_class($node)));
         }
 
         $compiler->addDebugInfo($node);
-        for ($i = 0; $i < count($node->getNode('tests')); $i += 2) {
+        for ($i = 0, $iMax = count($node->getNode('tests')); $i < $iMax; $i += 2) {
             if ($i > 0) {
                 $compiler
                     ->outdent()

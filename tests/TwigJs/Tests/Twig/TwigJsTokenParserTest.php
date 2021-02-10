@@ -2,25 +2,29 @@
 
 namespace TwigJs\Tests\Twig;
 
+use PHPUnit\Framework\TestCase;
+use Twig\Environment;
+use Twig\Loader\ArrayLoader;
+use Twig\Source;
 use TwigJs\Twig\TwigJsTokenParser;
+use TwigJs\Twig\TwigJsNode;
 
-class TwigJsTokenParserTest extends \PHPUnit_Framework_TestCase
+class TwigJsTokenParserTest extends TestCase
 {
     public function testParse()
     {
         $env = $this->getEnv();
-        $stream = $env->tokenize('{% twig_js name="foo" %}');
+        $stream = $env->tokenize(new Source('{% twig_js name="foo" %}', 'bar'));
         $token = $env->parse($stream)->getNode('body')->getNode(0);
 
-        $this->assertInstanceOf('TwigJs\Twig\TwigJsNode', $token);
+        $this->assertInstanceOf(TwigJsNode::class, $token);
         $this->assertEquals('foo', $token->getAttribute('name'));
     }
 
     private function getEnv()
     {
-        $env = new \Twig_Environment();
+        $env = new Environment(new ArrayLoader([]));
         $env->addTokenParser(new TwigJsTokenParser());
-        $env->setLoader(new \Twig_Loader_String());
 
         return $env;
     }

@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler\Expression\Unary;
 
+use Twig\Node\Expression\Unary\PosUnary;
+use Twig\Node\Node;
 use TwigJs\Compiler\Expression\UnaryCompiler;
 use TwigJs\JsCompiler;
 
@@ -25,15 +27,16 @@ class PosCompiler extends UnaryCompiler
 {
     public function getType()
     {
-        return 'Twig_Node_Expression_Unary_Pos';
+        return PosUnary::class;
     }
 
-    protected function operator(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function operator(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Expression_Unary_Pos) {
+        if (!$node instanceof PosUnary) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Twig_Node_Expression_Unary_Pos, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    PosUnary::class,
                     get_class($node)
                 )
             );

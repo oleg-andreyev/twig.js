@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler;
 
+use Twig\Node\Node;
+use Twig\Node\SandboxNode;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -25,19 +27,22 @@ class SandboxCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_Sandbox';
+        return SandboxNode::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Sandbox) {
+        if (!$node instanceof SandboxNode) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Twig_Node_Sandbox, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    SandboxNode::class,
                     get_class($node)
                 )
             );
         }
+
+        throw new \LogicException('Sandbox is not supported in Javascript templates.');
 
 //         $compiler
 //             ->addDebugInfo($this)

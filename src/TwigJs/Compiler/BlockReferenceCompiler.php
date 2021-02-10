@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler;
 
+use Twig\Node\BlockReferenceNode;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -25,21 +27,25 @@ class BlockReferenceCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_BlockReference';
+        return BlockReferenceNode::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_BlockReference) {
+        if (!$node instanceof BlockReferenceNode) {
             throw new \RuntimeException(
-                sprintf('$node must be an instanceof of \Twig_Node_BlockReference, but got "%s".', get_class($node))
+                sprintf(
+                    '$node must be an instanceof of %s, but got "%s".',
+                    BlockReferenceNode::class,
+                    get_class($node)
+                )
             );
         }
 
         $compiler
             ->addDebugInfo($node)
             ->write(
-                sprintf("sb.append(this.renderBlock(%s, context, blocks));\n", json_encode($node->getAttribute('name')))
+                sprintf("sb.append(this.renderBlock(%s, context, blocks));\n", json_encode($node->getAttribute('name'), JSON_THROW_ON_ERROR))
             )
         ;
     }

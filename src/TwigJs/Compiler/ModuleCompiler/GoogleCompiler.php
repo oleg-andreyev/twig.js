@@ -18,26 +18,18 @@
 
 namespace TwigJs\Compiler\ModuleCompiler;
 
-use Twig_NodeInterface;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\Compiler\ModuleCompiler;
-use TwigJs\TypeCompilerInterface;
 
-class GoogleCompiler extends ModuleCompiler implements TypeCompilerInterface
+class GoogleCompiler extends ModuleCompiler
 {
-    private $constantParent;
-
-    protected function compileClassHeader(JsCompiler $compiler, Twig_NodeInterface $node)
+    protected function compileClassHeader(JsCompiler $compiler, Node $node)
     {
-        $this->functionName = $functionName = $compiler->templateFunctionName
-            = $compiler->getFunctionName($node);
+        $functionName = $this->functionName = $compiler->templateFunctionName = $compiler->getFunctionName($node);
+        $filename = $node->getSourceContext()->getPath();
 
-        $parts = explode('.', $functionName);
-        array_pop($parts);
-
-        $filename = $node->getAttribute('filename');
-        if (!empty($filename)
-                && false !== strpos($filename, DIRECTORY_SEPARATOR)) {
+        if (!empty($filename) && false !== strpos($filename, DIRECTORY_SEPARATOR)) {
             $parts = explode(DIRECTORY_SEPARATOR, realpath($filename));
             $filename = implode(DIRECTORY_SEPARATOR, array_splice($parts, -4));
         }
@@ -46,17 +38,15 @@ class GoogleCompiler extends ModuleCompiler implements TypeCompilerInterface
             ->write("/**\n")
             ->write(" * @fileoverview Compiled template for file\n")
             ->write(" *\n")
-            ->write(" * ".str_replace('*/', '*\\/', $filename)."\n")
+            ->write(" * " . str_replace('*/', '*\\/', $filename) . "\n")
             ->write(" *\n")
             ->write(" * @suppress {checkTypes|fileoverviewTags}\n")
             ->write(" */\n")
-            ->write("\n")
-        ;
+            ->write("\n");
 
         $compiler
-            ->write("goog.provide('$functionName');\n")
-            ->write("\n")
             ->write("goog.require('twig');\n")
+            ->write("goog.provide('twig.templates');\n")
             ->write("goog.require('twig.filter');\n")
             ->write("\n")
             ->write(
@@ -68,8 +58,7 @@ class GoogleCompiler extends ModuleCompiler implements TypeCompilerInterface
             )
             ->write("$functionName = function(env) {\n")
             ->indent()
-            ->write("twig.Template.call(this, env);\n")
-        ;
+            ->write("twig.Template.call(this, env);\n");
 
         if (count($node->getNode('blocks')) || count($node->getNode('traits'))) {
             $this->compileConstructor($compiler, $node);
@@ -78,11 +67,10 @@ class GoogleCompiler extends ModuleCompiler implements TypeCompilerInterface
         $compiler
             ->outdent()
             ->write("};\n")
-            ->write("twig.inherits($functionName, twig.Template);\n\n")
-        ;
+            ->write("twig.inherits($functionName, twig.Template);\n\n");
     }
 
-    protected function compileClassFooter(JsCompiler $compiler, Twig_NodeInterface $node)
+    protected function compileClassFooter(JsCompiler $compiler, Node $node)
     {
     }
 }

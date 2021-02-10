@@ -1,11 +1,13 @@
 {
   "devDependencies": {
-    "dnode": "1.2.0",
-    "mocha": "1.15.1",
-    "should": "2.1.1",
-    "sinon": "1.7.3"
+    "json-rpc2": "^2.0.0",
+    "mocha": "^8.2.1",
+    "nan": "^2.14.2",
+    "should": "^13.2.3",
+    "sinon": "^9.2.3"
   },
   "scripts": {
-    "test": "mocha --require test/bootstrap.js test/*.js test/*/*.js test/*/*/*.js"
+    "json-rpc": "node ./tests-js/json-rpc.js &",
+    "test": "mocha --require tests-js/bootstrap.js tests-js/twig/**.js"
   }
 }

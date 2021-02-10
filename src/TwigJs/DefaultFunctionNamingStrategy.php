@@ -18,20 +18,24 @@
 
 namespace TwigJs;
 
+use Twig\Node\ModuleNode;
+
 class DefaultFunctionNamingStrategy implements FunctionNamingStrategyInterface
 {
-    public function getFunctionName(\Twig_Node_Module $module)
+    private const TWIG_TEMPLATES_NS = 'twig.templates[\'%s\']';
+
+    public function getFunctionName(ModuleNode $module): string
     {
         if ($module->hasAttribute('twig_js_name')) {
-            return $module->getAttribute('twig_js_name');
+            return sprintf(self::TWIG_TEMPLATES_NS, $module->getAttribute('twig_js_name'));
         }
 
-        $templateName = $module->getAttribute('filename');
+        $templateName = $module->getSourceContext()->getName();
         $templateName = basename($templateName, '.twig');
         $templateName = str_replace(':', '.', $templateName);
         $templateName = preg_replace('/\.+/', '.', $templateName);
         $templateName = trim($templateName, '.');
 
-        return $templateName;
+        return sprintf(self::TWIG_TEMPLATES_NS, $templateName);
     }
 }

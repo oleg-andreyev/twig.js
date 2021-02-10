@@ -2,23 +2,27 @@
 
 namespace TwigJs\Tests\Twig;
 
+use PHPUnit\Framework\TestCase;
+use Twig\Environment;
+use Twig\Loader\ArrayLoader;
+use Twig\Source;
 use TwigJs\Twig\TwigJsExtension;
 
-class IntegrationTest extends \PHPUnit_Framework_TestCase
+class IntegrationTest extends TestCase
 {
     public function testNameIsSetOnModule()
     {
         $env = $this->getEnv();
-        $module = $env->parse($env->tokenize('{% twig_js name="foo" %}'));
+        $module = $env->parse($env->tokenize(new Source('{% twig_js name="foo" %}', 'bar')));
 
         $this->assertTrue($module->hasAttribute('twig_js_name'));
         $this->assertEquals('foo', $module->getAttribute('twig_js_name'));
-        $this->assertEquals(0, count($module->getNode('body')));
+        $this->assertCount(0, $module->getNode('body'));
     }
 
     private function getEnv()
     {
-        $env = new \Twig_Environment();
+        $env = new Environment(new ArrayLoader([]));
         $env->addExtension(new TwigJsExtension());
 
         return $env;

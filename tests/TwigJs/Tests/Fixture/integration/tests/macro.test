@@ -1,11 +1,11 @@
 --TEST--
 Macro test
 --TEMPLATE--
-{% macro link(link, content, title) %}
+{%- macro link(link, content, title) -%}
 <a href="{{ link }}"
     {%- if title is not empty %} title="{{ title }}"{% endif -%}
     >{{ content }}</a>
-{% endmacro %}
+{%- endmacro -%}
 {{ _self.link("http://example.org", "Example", "Read more") }}
 --DATA--
 return {}

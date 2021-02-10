@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler;
 
+use Twig\Node\MacroNode;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -25,15 +27,16 @@ class MacroCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_Macro';
+        return MacroNode::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Macro) {
+        if (!$node instanceof MacroNode) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Twig_Node_Macro, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    MacroNode::class,
                     get_class($node)
                 )
             );
@@ -64,11 +67,22 @@ class MacroCompiler implements TypeCompilerInterface
             ->write(" * @return {string}\n")
             ->write(" */\n")
             ->raw($compiler->templateFunctionName)
-            ->raw(".prototype.get")
-            ->raw($node->getAttribute('name'))
+            ->raw(sprintf(".prototype.macro_%s", $node->getAttribute('name')))
             ->raw(" = function(".implode(', ', $arguments).") {\n")
             ->indent()
-            ->write("var context = twig.extend({}, this.env_.getGlobals());\n\n")
+        ;
+
+        if (!count($arguments)) {
+            $compiler->write("var context = twig.extend({}, this.env_.getGlobals());\n\n");
+        } else {
+            $localVarMap = json_encode($compiler->localVarMap);
+            foreach ($arguments as $argument) {
+                $localVarMap = str_replace('"'.$argument.'"', $argument, $localVarMap);
+            }
+            $compiler->write("var context = twig.extend({}, $localVarMap, this.env_.getGlobals());\n\n");
+        }
+
+        $compiler
             ->write("var sb = new twig.StringBuffer;\n")
             ->subcompile($node->getNode('body'))
             ->raw("\n")

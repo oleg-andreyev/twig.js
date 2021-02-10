@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler\Expression\Binary;
 
+use Twig\Node\Expression\Binary\InBinary;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -25,15 +27,16 @@ class InCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_Expression_Binary_In';
+        return InBinary::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Expression_Binary_In) {
+        if (!$node instanceof InBinary) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Twig_Node_Expression_Binary_In, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    InBinary::class,
                     get_class($node)
                 )
             );

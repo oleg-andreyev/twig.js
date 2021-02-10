@@ -1,5 +1,5 @@
 
-PLOVR_URL="http://plovr.googlecode.com/files/plovr-81ed862.jar"
+PLOVR_URL="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/plovr/plovr-81ed862.jar"
 
 build: clean twig.js twig.dev.js
 
@@ -17,7 +17,7 @@ bin/plovr:
 	wget $(PLOVR_URL) -O bin/plovr
 
 test: vendor node_modules
-	node tests-js/dnode.js &
+	node tests-js/json-rpc.js &
 	./vendor/bin/phpunit
 	./node_modules/.bin/mocha --require tests-js/bootstrap.js tests-js/twig/* tests-js/twig/*/*
 

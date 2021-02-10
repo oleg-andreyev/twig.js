@@ -18,25 +18,30 @@
 
 namespace TwigJs\Compiler;
 
+use Twig\Node\Node;
+use Twig\Node\SandboxedPrintNode;
 use TwigJs\JsCompiler;
 
 class SandboxedPrintCompiler extends PrintCompiler
 {
     public function getType()
     {
-        return 'Twig_Node_SandboxedPrint';
+        return SandboxedPrintNode::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_SandboxedPrint) {
+        if (!$node instanceof SandboxedPrintNode) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \SandboxedPrint, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    SandboxedPrintNode::class,
                     get_class($node)
                 )
             );
         }
+
+        throw new \LogicException('SandboxedPrint is not supported in Javascript templates.');
 
 //         $compiler
 //             ->addDebugInfo($this)

@@ -2,6 +2,8 @@
 
 namespace TwigJs\Compiler\Expression;
 
+use Twig\Node\Expression\MethodCallExpression;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -9,15 +11,16 @@ class MethodCallCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_Expression\\MethodCall';
+        return MethodCallExpression::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Expression_MethodCall) {
+        if (!$node instanceof MethodCallExpression) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Twig_Node_Expression_MethodCall, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    MethodCallExpression::class,
                     get_class($node)
                 )
             );

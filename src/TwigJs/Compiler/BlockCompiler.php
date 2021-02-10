@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler;
 
+use Twig\Node\BlockNode;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
@@ -25,14 +27,18 @@ class BlockCompiler implements TypeCompilerInterface
 {
     public function getType()
     {
-        return 'Twig_Node_Block';
+        return BlockNode::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Block) {
+        if (!$node instanceof BlockNode) {
             throw new \RuntimeException(
-                sprintf('$node must be an instanceof of \Block, but got "%s".', get_class($node))
+                sprintf(
+                    '$node must be an instanceof of %s, but got "%s".',
+                    BlockNode::class,
+                    get_class($node)
+                )
             );
         }
 

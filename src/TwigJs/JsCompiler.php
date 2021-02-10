@@ -18,73 +18,142 @@
 
 namespace TwigJs;
 
-use TwigJs\Compiler\MacroCompiler;
-use TwigJs\Compiler\Test\SameAsCompiler;
-use TwigJs\Compiler\Test\OddCompiler;
-use TwigJs\Compiler\Test\NullCompiler;
-use TwigJs\Compiler\Test\NoneCompiler;
-use TwigJs\Compiler\Test\EvenCompiler;
-use TwigJs\Compiler\Test\EmptyCompiler;
-use TwigJs\Compiler\Test\DivisibleByCompiler;
-use TwigJs\Compiler\Test\DefinedCompiler;
-use TwigJs\Compiler\ImportCompiler;
+use Twig\Compiler;
+use Twig\Environment;
+use Twig\Node\Expression\InlinePrint;
+use Twig\Profiler\Node\EnterProfileNode;
+use Twig\Profiler\Node\LeaveProfileNode;
 use TwigJs\Compiler\AutoEscapeCompiler;
-use TwigJs\Compiler\Expression\TempNameCompiler;
-use TwigJs\Compiler\SetTempCompiler;
-use TwigJs\Compiler\ExtensionReferenceCompiler;
-use TwigJs\Compiler\BlockReferenceCompiler;
-use TwigJs\Compiler\Expression\DefaultFilterCompiler;
-use TwigJs\Compiler\BodyCompiler;
-use TwigJs\Compiler\SetCompiler;
-use TwigJs\Compiler\SpacelessCompiler;
-use TwigJs\Compiler\IncludeCompiler;
-use TwigJs\Compiler\Expression\ExtensionReferenceCompiler as ExpressionExtensionReferenceCompiler;
-use TwigJs\Compiler\Expression\ConditionalCompiler;
-use TwigJs\Compiler\Expression\ArrayCompiler;
-use TwigJs\Compiler\Expression\FunctionCompiler;
-use TwigJs\Compiler\Expression\ParentCompiler;
 use TwigJs\Compiler\BlockCompiler;
-use TwigJs\Compiler\Expression\BlockReferenceCompiler as ExpressionBlockReferenceCompiler;
-use TwigJs\Compiler\Expression\Binary\SubCompiler;
-use TwigJs\Compiler\Expression\Binary\RangeCompiler;
-use TwigJs\Compiler\Expression\Binary\PowerCompiler;
-use TwigJs\Compiler\Expression\Binary\OrCompiler;
-use TwigJs\Compiler\Expression\Binary\NotInCompiler;
-use TwigJs\Compiler\Expression\Binary\NotEqualCompiler;
-use TwigJs\Compiler\Expression\Binary\MulCompiler;
-use TwigJs\Compiler\Expression\Binary\ModCompiler;
-use TwigJs\Compiler\Expression\Binary\LessEqualCompiler;
-use TwigJs\Compiler\Expression\Binary\LessCompiler;
-use TwigJs\Compiler\Expression\Binary\InCompiler;
-use TwigJs\Compiler\Expression\Binary\GreaterEqualCompiler;
-use TwigJs\Compiler\Expression\Binary\GreaterCompiler;
-use TwigJs\Compiler\Expression\Binary\FloorDivCompiler;
-use TwigJs\Compiler\Expression\Binary\EqualCompiler;
-use TwigJs\Compiler\Expression\Binary\DivCompiler;
-use TwigJs\Compiler\Expression\Binary\ConcatCompiler;
-use TwigJs\Compiler\Expression\Binary\BitwiseXorCompiler;
-use TwigJs\Compiler\Expression\Binary\BitwiseOrCompiler;
-use TwigJs\Compiler\Expression\Binary\BitwiseAndCompiler;
-use TwigJs\Compiler\Expression\Binary\AndCompiler;
-use TwigJs\Compiler\Expression\Binary\AddCompiler;
-use TwigJs\Compiler\Expression\Unary\PosCompiler;
-use TwigJs\Compiler\Expression\Unary\NotCompiler;
-use TwigJs\Compiler\Expression\Unary\NegCompiler;
-use TwigJs\Compiler\Expression\GetAttrCompiler;
-use TwigJs\Compiler\Expression\ConstantCompiler;
+use TwigJs\Compiler\BlockReferenceCompiler;
+use TwigJs\Compiler\BodyCompiler;
+use TwigJs\Compiler\DoCompiler;
+use TwigJs\Compiler\Expression\ArrayCompiler;
 use TwigJs\Compiler\Expression\AssignNameCompiler;
+use TwigJs\Compiler\Expression\Binary\AddCompiler;
+use TwigJs\Compiler\Expression\Binary\AndCompiler;
+use TwigJs\Compiler\Expression\Binary\BitwiseAndCompiler;
+use TwigJs\Compiler\Expression\Binary\BitwiseOrCompiler;
+use TwigJs\Compiler\Expression\Binary\BitwiseXorCompiler;
+use TwigJs\Compiler\Expression\Binary\ConcatCompiler;
+use TwigJs\Compiler\Expression\Binary\DivCompiler;
+use TwigJs\Compiler\Expression\Binary\EqualCompiler;
+use TwigJs\Compiler\Expression\Binary\FloorDivCompiler;
+use TwigJs\Compiler\Expression\Binary\GreaterCompiler;
+use TwigJs\Compiler\Expression\Binary\GreaterEqualCompiler;
+use TwigJs\Compiler\Expression\Binary\InCompiler;
+use TwigJs\Compiler\Expression\Binary\LessCompiler;
+use TwigJs\Compiler\Expression\Binary\LessEqualCompiler;
+use TwigJs\Compiler\Expression\Binary\ModCompiler;
+use TwigJs\Compiler\Expression\Binary\MulCompiler;
+use TwigJs\Compiler\Expression\Binary\NotEqualCompiler;
+use TwigJs\Compiler\Expression\Binary\NotInCompiler;
+use TwigJs\Compiler\Expression\Binary\OrCompiler;
+use TwigJs\Compiler\Expression\Binary\PowerCompiler;
+use TwigJs\Compiler\Expression\Binary\RangeCompiler;
+use TwigJs\Compiler\Expression\Binary\SubCompiler;
+use TwigJs\Compiler\Expression\BlockReferenceCompiler as ExpressionBlockReferenceCompiler;
+use TwigJs\Compiler\Expression\ConditionalCompiler;
+use TwigJs\Compiler\Expression\ConstantCompiler;
+use TwigJs\Compiler\Expression\DefaultFilterCompiler;
+use TwigJs\Compiler\Expression\FilterCompiler;
+use TwigJs\Compiler\Expression\FunctionCompiler;
+use TwigJs\Compiler\Expression\GetAttrCompiler;
+use TwigJs\Compiler\Expression\MethodCallCompiler;
+use TwigJs\Compiler\Expression\NameCompiler;
+use TwigJs\Compiler\Expression\ParentCompiler;
+use TwigJs\Compiler\Expression\TempNameCompiler;
+use TwigJs\Compiler\Expression\TestCompiler;
+use TwigJs\Compiler\Expression\Unary\NegCompiler;
+use TwigJs\Compiler\Expression\Unary\NotCompiler;
+use TwigJs\Compiler\Expression\Unary\PosCompiler;
 use TwigJs\Compiler\ForCompiler;
 use TwigJs\Compiler\ForLoopCompiler;
-use TwigJs\Compiler\Expression\FilterCompiler;
-use TwigJs\Compiler\PrintCompiler;
-use TwigJs\Compiler\Expression\NameCompiler;
-use TwigJs\Compiler\Expression\TestCompiler;
 use TwigJs\Compiler\IfCompiler;
-use TwigJs\Compiler\TextCompiler;
-use TwigJs\Compiler\NodeCompiler;
+use TwigJs\Compiler\ImportCompiler;
+use TwigJs\Compiler\IncludeCompiler;
+use TwigJs\Compiler\InlinePrintCompiler;
+use TwigJs\Compiler\MacroCompiler;
 use TwigJs\Compiler\ModuleCompiler;
+use TwigJs\Compiler\NodeCompiler;
+use TwigJs\Compiler\PrintCompiler;
+use TwigJs\Compiler\SetCompiler;
+use TwigJs\Compiler\SetTempCompiler;
+use TwigJs\Compiler\SpacelessCompiler;
+use TwigJs\Compiler\Test\DefinedCompiler;
+use TwigJs\Compiler\Test\DivisibleByCompiler;
+use TwigJs\Compiler\Test\EmptyCompiler;
+use TwigJs\Compiler\Test\EvenCompiler;
+use TwigJs\Compiler\Test\NoneCompiler;
+use TwigJs\Compiler\Test\NullCompiler;
+use TwigJs\Compiler\Test\OddCompiler;
+use TwigJs\Compiler\Test\SameAsCompiler;
+use TwigJs\Compiler\TextCompiler;
+use Twig\Node\Node;
+use Twig\Node\BodyNode;
+use Twig\Node\ModuleNode;
+use Twig\Node\BlockNode;
+use Twig\Node\TextNode;
+use Twig\Node\IfNode;
+use Twig\Node\PrintNode;
+use Twig\Node\ForNode;
+use Twig\Node\ForLoopNode;
+use Twig\Node\SetNode;
+use Twig\Node\IncludeNode;
+use Twig\Node\SpacelessNode;
+use Twig\Node\BlockReferenceNode;
+use Twig\Node\AutoEscapeNode;
+use Twig\Node\ImportNode;
+use Twig\Node\MacroNode;
+use Twig\Node\DoNode;
+use Twig\Node\Expression\TempNameExpression;
+use Twig\Node\Expression\ConditionalExpression;
+use Twig\Node\Expression\ArrayExpression;
+use Twig\Node\Expression\FunctionExpression;
+use Twig\Node\Expression\ParentExpression;
+use Twig\Node\Expression\BlockReferenceExpression;
+use Twig\Node\Expression\AssignNameExpression;
+use Twig\Node\Expression\TestExpression;
+use Twig\Node\Expression\NameExpression;
+use Twig\Node\Expression\FilterExpression;
+use Twig\Node\Expression\Filter\DefaultFilter;
+use Twig\Node\Expression\ConstantExpression;
+use Twig\Node\Expression\GetAttrExpression;
+use Twig\Node\Expression\MethodCallExpression;
+use Twig\Node\Expression\Binary\AddBinary;
+use Twig\Node\Expression\Binary\AndBinary;
+use Twig\Node\Expression\Binary\BitwiseAndBinary;
+use Twig\Node\Expression\Binary\BitwiseOrBinary;
+use Twig\Node\Expression\Binary\BitwiseXorBinary;
+use Twig\Node\Expression\Binary\ConcatBinary;
+use Twig\Node\Expression\Binary\DivBinary;
+use Twig\Node\Expression\Binary\EqualBinary;
+use Twig\Node\Expression\Binary\FloorDivBinary;
+use Twig\Node\Expression\Binary\GreaterBinary;
+use Twig\Node\Expression\Binary\GreaterEqualBinary;
+use Twig\Node\Expression\Binary\InBinary;
+use Twig\Node\Expression\Binary\LessBinary;
+use Twig\Node\Expression\Binary\LessEqualBinary;
+use Twig\Node\Expression\Binary\ModBinary;
+use Twig\Node\Expression\Binary\MulBinary;
+use Twig\Node\Expression\Binary\NotEqualBinary;
+use Twig\Node\Expression\Binary\NotInBinary;
+use Twig\Node\Expression\Binary\OrBinary;
+use Twig\Node\Expression\Binary\PowerBinary;
+use Twig\Node\Expression\Binary\RangeBinary;
+use Twig\Node\Expression\Binary\SubBinary;
+use Twig\Node\Expression\Unary\NegUnary;
+use Twig\Node\Expression\Unary\NotUnary;
+use Twig\Node\Expression\Unary\PosUnary;
+use Twig\Node\Expression\Test\ConstantTest;
+use Twig\Node\Expression\Test\DefinedTest;
+use Twig\Node\Expression\Test\DivisiblebyTest;
+use Twig\Node\Expression\Test\EvenTest;
+use Twig\Node\Expression\Test\NullTest;
+use Twig\Node\Expression\Test\OddTest;
+use Twig\Node\Expression\Test\SameasTest;
 
-class JsCompiler extends \Twig_Compiler
+class JsCompiler extends Compiler
 {
     /** Whether the current expression is a template name */
     public $isTemplateName = false;
@@ -108,80 +177,80 @@ class JsCompiler extends \Twig_Compiler
     private $filterFunctions;
     private $functionMap;
 
-    public function __construct(\Twig_Environment $env)
+    public function __construct(Environment $env)
     {
         parent::__construct($env);
 
-        $this->typeCompilers = array(
-            'Twig_Node' => new NodeCompiler(),
-            'Twig_Node_Body' => new BodyCompiler(),
-            'Twig_Node_Module' => new ModuleCompiler\GoogleCompiler(),
-            'Twig_Node_Block' => new BlockCompiler(),
-            'Twig_Node_Text' => new TextCompiler(),
-            'Twig_Node_If' => new IfCompiler(),
-            'Twig_Node_Print' => new PrintCompiler(),
-            'Twig_Node_For' => new ForCompiler(),
-            'Twig_Node_ForLoop' => new ForLoopCompiler(),
-            'Twig_Node_Set' => new SetCompiler(),
-            'Twig_Node_Include' => new IncludeCompiler(),
-            'Twig_Node_Spaceless' => new SpacelessCompiler(),
-            'Twig_Node_SetTemp' => new SetTempCompiler(),
-            'Twig_Node_ExtensionReference' => new ExtensionReferenceCompiler(),
-            'Twig_Node_BlockReference' => new BlockReferenceCompiler(),
-            'Twig_Node_AutoEscape' => new AutoEscapeCompiler(),
-            'Twig_Node_Import' => new ImportCompiler(),
-            'Twig_Node_Macro' => new MacroCompiler(),
-            'Twig_Node_Expression_TempName' => new TempNameCompiler(),
-            'Twig_Node_Expression_DefaultFilter' => new DefaultFilterCompiler(),
-            'Twig_Node_Expression_ExtensionReference' => new ExpressionExtensionReferenceCompiler(),
-            'Twig_Node_Expression_Conditional' => new ConditionalCompiler(),
-            'Twig_Node_Expression_Array' => new ArrayCompiler(),
-            'Twig_Node_Expression_Function' => new FunctionCompiler(),
-            'Twig_Node_Expression_Parent' => new ParentCompiler(),
-            'Twig_Node_Expression_BlockReference' => new ExpressionBlockReferenceCompiler(),
-            'Twig_Node_Expression_AssignName' => new AssignNameCompiler(),
-            'Twig_Node_Expression_Test' => new TestCompiler(),
-            'Twig_Node_Expression_Name' => new NameCompiler(),
-            'Twig_Node_Expression_Filter' => new FilterCompiler(),
-            'Twig_Node_Expression_Filter_Default' => new Compiler\Expression\Filter\DefaultCompiler(),
-            'Twig_Node_Expression_Constant' => new ConstantCompiler(),
-            'Twig_Node_Expression_GetAttr' => new GetAttrCompiler(),
-            'Twig_Node_Expression_MacroCall' => new Compiler\Expression\MacroCallCompiler(),
-            'Twig_Node_Expression_MethodCall' => new Compiler\Expression\MethodCallCompiler(),
-            'Twig_Node_Expression_Binary_Add' => new AddCompiler(),
-            'Twig_Node_Expression_Binary_And' => new AndCompiler(),
-            'Twig_Node_Expression_Binary_BitwiseAnd' => new BitwiseAndCompiler(),
-            'Twig_Node_Expression_Binary_BitwiseOr' => new BitwiseOrCompiler(),
-            'Twig_Node_Expression_Binary_BitwiseXor' => new BitwiseXorCompiler(),
-            'Twig_Node_Expression_Binary_Concat' => new ConcatCompiler(),
-            'Twig_Node_Expression_Binary_Div' => new DivCompiler(),
-            'Twig_Node_Expression_Binary_Equal' => new EqualCompiler(),
-            'Twig_Node_Expression_Binary_FloorDiv' => new FloorDivCompiler(),
-            'Twig_Node_Expression_Binary_Greater' => new GreaterCompiler(),
-            'Twig_Node_Expression_Binary_GreaterEqual' => new GreaterEqualCompiler(),
-            'Twig_Node_Expression_Binary_In' => new InCompiler(),
-            'Twig_Node_Expression_Binary_Less' => new LessCompiler(),
-            'Twig_Node_Expression_Binary_LessEqual' => new LessEqualCompiler(),
-            'Twig_Node_Expression_Binary_Mod' => new ModCompiler(),
-            'Twig_Node_Expression_Binary_Mul' => new MulCompiler(),
-            'Twig_Node_Expression_Binary_NotEqual' => new NotEqualCompiler(),
-            'Twig_Node_Expression_Binary_NotIn' => new NotInCompiler(),
-            'Twig_Node_Expression_Binary_Or' => new OrCompiler(),
-            'Twig_Node_Expression_Binary_Power' => new PowerCompiler(),
-            'Twig_Node_Expression_Binary_Range' => new RangeCompiler(),
-            'Twig_Node_Expression_Binary_Sub' => new SubCompiler(),
-            'Twig_Node_Expression_Unary_Neg' => new NegCompiler(),
-            'Twig_Node_Expression_Unary_Not' => new NotCompiler(),
-            'Twig_Node_Expression_Unary_Pos' => new PosCompiler(),
-            'Twig_Node_Expression_Test_Constant' => new Compiler\Expression\Test\ConstantCompiler(),
-            'Twig_Node_Expression_Test_Defined' => new Compiler\Expression\Test\DefinedCompiler(),
-            'Twig_Node_Expression_Test_Divisibleby' => new Compiler\Expression\Test\DivisiblebyCompiler(),
-            'Twig_Node_Expression_Test_Even' => new Compiler\Expression\Test\EvenCompiler(),
-            'Twig_Node_Expression_Test_Null' => new Compiler\Expression\Test\NullCompiler(),
-            'Twig_Node_Expression_Test_Odd' => new Compiler\Expression\Test\OddCompiler(),
-            'Twig_Node_Expression_Test_Sameas' => new Compiler\Expression\Test\SameasCompiler(),
+        $this->typeCompilers = [
+            Node::class => new NodeCompiler(),
+            BodyNode::class => new BodyCompiler(),
+            ModuleNode::class => new ModuleCompiler\GoogleCompiler(),
+            BlockNode::class => new BlockCompiler(),
+            TextNode::class => new TextCompiler(),
+            IfNode::class => new IfCompiler(),
+            PrintNode::class => new PrintCompiler(),
+            ForNode::class => new ForCompiler(),
+            ForLoopNode::class => new ForLoopCompiler(),
+            SetNode::class => new SetCompiler(),
+            IncludeNode::class => new IncludeCompiler(),
+            SpacelessNode::class => new SpacelessCompiler(),
+            BlockReferenceNode::class => new BlockReferenceCompiler(),
+            AutoEscapeNode::class => new AutoEscapeCompiler(),
+            ImportNode::class => new ImportCompiler(),
+            MacroNode::class => new MacroCompiler(),
+            DoNode::class => new DoCompiler(),
 
-        );
+            InlinePrint::class => new InlinePrintCompiler(),
+            TempNameExpression::class => new TempNameCompiler(),
+            ConditionalExpression::class => new ConditionalCompiler(),
+            ArrayExpression::class => new ArrayCompiler(),
+            FunctionExpression::class => new FunctionCompiler(),
+            ParentExpression::class => new ParentCompiler(),
+            BlockReferenceExpression::class => new ExpressionBlockReferenceCompiler(),
+            AssignNameExpression::class => new AssignNameCompiler(),
+            TestExpression::class => new TestCompiler(),
+            NameExpression::class => new NameCompiler(),
+            FilterExpression::class => new FilterCompiler(),
+            DefaultFilter::class => new DefaultFilterCompiler(),
+            ConstantExpression::class => new ConstantCompiler(),
+            GetAttrExpression::class => new GetAttrCompiler(),
+            MethodCallExpression::class => new MethodCallCompiler(),
+
+            AddBinary::class => new AddCompiler(),
+            AndBinary::class => new AndCompiler(),
+            BitwiseAndBinary::class => new BitwiseAndCompiler(),
+            BitwiseOrBinary::class => new BitwiseOrCompiler(),
+            BitwiseXorBinary::class => new BitwiseXorCompiler(),
+            ConcatBinary::class => new ConcatCompiler(),
+            DivBinary::class => new DivCompiler(),
+            EqualBinary::class => new EqualCompiler(),
+            FloorDivBinary::class => new FloorDivCompiler(),
+            GreaterBinary::class => new GreaterCompiler(),
+            GreaterEqualBinary::class => new GreaterEqualCompiler(),
+            InBinary::class => new InCompiler(),
+            LessBinary::class => new LessCompiler(),
+            LessEqualBinary::class => new LessEqualCompiler(),
+            ModBinary::class => new ModCompiler(),
+            MulBinary::class => new MulCompiler(),
+            NotEqualBinary::class => new NotEqualCompiler(),
+            NotInBinary::class => new NotInCompiler(),
+            OrBinary::class => new OrCompiler(),
+            PowerBinary::class => new PowerCompiler(),
+            RangeBinary::class => new RangeCompiler(),
+            SubBinary::class => new SubCompiler(),
+
+            NegUnary::class => new NegCompiler(),
+            NotUnary::class => new NotCompiler(),
+            PosUnary::class => new PosCompiler(),
+
+            ConstantTest::class => new ConstantCompiler(),
+            DefinedTest::class => new DefinedCompiler(),
+            DivisiblebyTest::class => new DivisiblebyCompiler(),
+            EvenTest::class => new EvenCompiler(),
+            NullTest::class => new NullCompiler(),
+            OddTest::class => new OddCompiler(),
+            SameasTest::class => new SameasCompiler()
+        ];
 
         $this->testCompilers = array(
             'defined' => new DefinedCompiler(),
@@ -196,35 +265,35 @@ class JsCompiler extends \Twig_Compiler
 
         $this->filterCompilers = array();
         $this->filterFunctions = array(
-            '_default'    => 'twig.filter.def',
-            'abs'         => 'twig.filter.abs',
-            'batch'       => 'twig.filter.batch',
-            'capitalize'  => 'twig.filter.capitalize',
-            'default'     => 'twig.filter.def',
-            'e'           => 'twig.filter.escape',
-            'escape'      => 'twig.filter.escape',
-            'first'       => 'twig.filter.first',
-            'join'        => 'twig.filter.join',
+            '_default' => 'twig.filter.def',
+            'abs' => 'twig.filter.abs',
+            'batch' => 'twig.filter.batch',
+            'capitalize' => 'twig.filter.capitalize',
+            'default' => 'twig.filter.def',
+            'e' => 'twig.filter.escape',
+            'escape' => 'twig.filter.escape',
+            'first' => 'twig.filter.first',
+            'join' => 'twig.filter.join',
             'json_encode' => 'twig.filter.json_encode',
-            'keys'        => 'twig.filter.keys',
-            'last'        => 'twig.filter.last',
-            'length'      => 'twig.filter.length',
-            'lower'       => 'twig.filter.lower',
-            'merge'       => 'twig.filter.merge',
-            'nl2br'       => 'twig.filter.nl2br',
-            'replace'     => 'twig.filter.replace',
-            'reverse'     => 'twig.filter.reverse',
-            'title'       => 'twig.filter.title',
-            'trim'        => 'twig.filter.trim',
-            'upper'       => 'twig.filter.upper',
-            'url_encode'  => 'encodeURIComponent',
+            'keys' => 'twig.filter.keys',
+            'last' => 'twig.filter.last',
+            'length' => 'twig.filter.length',
+            'lower' => 'twig.filter.lower',
+            'merge' => 'twig.filter.merge',
+            'nl2br' => 'twig.filter.nl2br',
+            'replace' => 'twig.filter.replace',
+            'reverse' => 'twig.filter.reverse',
+            'title' => 'twig.filter.title',
+            'trim' => 'twig.filter.trim',
+            'upper' => 'twig.filter.upper',
+            'url_encode' => 'encodeURIComponent',
         );
 
         $this->functionMap = array(
-            'max'    => 'twig.functions.max',
-            'min'    => 'twig.functions.min',
+            'max' => 'twig.functions.max',
+            'min' => 'twig.functions.min',
             'random' => 'twig.functions.random',
-            'range'  => 'twig.range',
+            'range' => 'twig.range',
         );
     }
 
@@ -240,7 +309,7 @@ class JsCompiler extends \Twig_Compiler
 
     public function getDefine($key)
     {
-        return isset($this->defines[$key]) ? $this->defines[$key] : null;
+        return $this->defines[$key] ?? null;
     }
 
     public function setFunctionNamingStrategy(FunctionNamingStrategyInterface $strategy)
@@ -251,10 +320,10 @@ class JsCompiler extends \Twig_Compiler
     /**
      * Returns the function name for the given template name.
      *
-     * @param  \Twig_Node_Module $templateName
+     * @param ModuleNode $module
      * @return string
      */
-    final public function getFunctionName(\Twig_Node_Module $module)
+    final public function getFunctionName(ModuleNode $module)
     {
         if (null === $this->functionNamingStrategy) {
             $this->functionNamingStrategy = new DefaultFunctionNamingStrategy();
@@ -263,81 +332,100 @@ class JsCompiler extends \Twig_Compiler
         return $this->functionNamingStrategy->getFunctionName($module);
     }
 
-    public function setTypeCompilers(array $compilers)
+    public function setTypeCompilers(array $compilers): void
     {
         $this->typeCompilers = $compilers;
     }
 
-    public function addTypeCompiler(TypeCompilerInterface $compiler)
+    public function addTypeCompiler(TypeCompilerInterface $compiler): void
     {
         $this->typeCompilers[$compiler->getType()] = $compiler;
     }
 
     public function getTestCompiler($name)
     {
-        return isset($this->testCompilers[$name]) ?
-            $this->testCompilers[$name] : null;
+        return $this->testCompilers[$name] ?? null;
     }
 
-    public function addTestCompiler(TestCompilerInterface $compiler)
+    public function addTestCompiler(TestCompilerInterface $compiler): void
     {
         $this->testCompilers[$compiler->getName()] = $compiler;
     }
 
     public function getFilterFunction($name)
     {
-        return isset($this->filterFunctions[$name]) ?
-            $this->filterFunctions[$name] : null;
+        return $this->filterFunctions[$name] ?? null;
     }
 
-    public function setFilterFunction($filterName, $functionName)
+    public function setFilterFunction($filterName, $functionName): void
     {
         $this->filterFunctions[$filterName] = $functionName;
     }
 
     public function getFilterCompiler($name)
     {
-        return isset($this->filterCompilers[$name]) ?
-            $this->filterCompilers[$name] : null;
+        return $this->filterCompilers[$name] ?? null;
     }
 
-    public function addFilterCompiler(FilterCompilerInterface $compiler)
+    public function addFilterCompiler(FilterCompilerInterface $compiler): void
     {
         $this->filterCompilers[$compiler->getName()] = $compiler;
     }
 
-    public function setJsFunction($twigFunctionName, $jsFunctionName)
+    public function setJsFunction($twigFunctionName, $jsFunctionName): void
     {
         $this->functionMap[$twigFunctionName] = $jsFunctionName;
     }
 
-    public function getJsFunction($twigFunctionName)
+    public function getJsFunction($twigFunctionName): ?string
     {
-        return isset($this->functionMap[$twigFunctionName]) ?
-            $this->functionMap[$twigFunctionName] : null;
+        return $this->functionMap[$twigFunctionName] ?? null;
     }
 
-    public function compile(\Twig_NodeInterface $node, $indentation = 0)
+    public function compile(Node $node, $indentation = 0)
     {
-        $this->lastLine = null;
-        $this->source = '';
-        $this->sourceOffset = 0;
-        $this->sourceLine = 0;
-        $this->indentation = $indentation;
+        $this->setPrivatePropOfParent('lastLine', null);
+        $this->setPrivatePropOfParent('source', '');
+        $this->setPrivatePropOfParent('debugInfo', []);
+        $this->setPrivatePropOfParent('sourceOffset', 0);
+        // source code starts at 1 (as we then increment it when we encounter new lines)
+        $this->setPrivatePropOfParent('sourceLine', 1);
+        $this->setPrivatePropOfParent('indentation', $indentation);
+        $this->setPrivatePropOfParent('varNameSalt', 0);
 
-        $this->subcompile($node);
+        $nodeClass = get_class($node);
+
+        if (!isset($this->typeCompilers[$nodeClass])) {
+            throw new \RuntimeException(sprintf('There is no compiler for node type "%s".', $nodeClass));
+        }
+
+        $this->typeCompilers[$nodeClass]->compile($this, $node);
 
         return $this;
     }
 
-    public function subcompile(\Twig_NodeInterface $node, $raw = true)
+    private function setPrivatePropOfParent(string $prop, $value)
     {
-        if ($node instanceof \Twig_Profiler_Node_EnterProfile || $node instanceof \Twig_Profiler_Node_LeaveProfile) {
+        \Closure::bind(function () use ($prop, $value) {
+            $this->$prop = $value;
+        }, $this, Compiler::class)();
+    }
+
+    private function getPrivatePropOfParent(string $prop)
+    {
+        return \Closure::bind(function () use ($prop) {
+            return $this->$prop;
+        }, $this, Compiler::class)();
+    }
+
+    public function subcompile(Node $node, $raw = true)
+    {
+        if ($node instanceof EnterProfileNode || $node instanceof LeaveProfileNode) {
             return $this;
         }
 
         if (false === $raw) {
-            $this->addIndentation();
+            $this->write();
         }
 
         $nodeClass = get_class($node);
@@ -351,15 +439,15 @@ class JsCompiler extends \Twig_Compiler
         return $this;
     }
 
-    public function enterScope()
+    public function enterScope(): JsCompiler
     {
         $this->scopes[] = $this->scopeVariables;
-        $this->scopeVariables = array();
+        $this->scopeVariables = [];
 
         return $this;
     }
 
-    public function leaveScope()
+    public function leaveScope(): JsCompiler
     {
         if (false === $lastScope = array_pop($this->scopes)) {
             throw new \RuntimeException('leaveScope() must be called only after enterScope.');
@@ -372,7 +460,7 @@ class JsCompiler extends \Twig_Compiler
         return $this;
     }
 
-    public function setVar($var, $localName)
+    public function setVar($var, $localName): JsCompiler
     {
         $this->localVarMap[$var] =
         $this->scopeVariables[$var] = $localName;
@@ -380,28 +468,46 @@ class JsCompiler extends \Twig_Compiler
         return $this;
     }
 
-    public function unsetVar($var)
+    public function unsetVar($var): JsCompiler
     {
         unset($this->localVarMap[$var]);
 
         return $this;
     }
 
-    public function setTemplateName($bool)
+    public function setTemplateName($name): JsCompiler
     {
-        $this->isTemplateName = (Boolean) $bool;
+        $this->isTemplateName = (boolean)$name;
 
         return $this;
     }
 
-    public function string($value)
+    public function string($value): JsCompiler
     {
         return $this->repr($value);
     }
 
     public function repr($value)
     {
-        $this->source .= json_encode($value);
+        $this->raw(json_encode($value, JSON_THROW_ON_ERROR));
+        return $this;
+    }
+
+    public function addDebugInfo(Node $node)
+    {
+        if ($node->getTemplateLine() !== $this->getPrivatePropOfParent('lastLine')) {
+            $this->write(sprintf("/* line %d */\n", $node->getTemplateLine()));
+
+            $sourceLine = $this->getPrivatePropOfParent('sourceLine');
+            $source = $this->getPrivatePropOfParent('source');
+            $sourceOffset = $this->getPrivatePropOfParent('sourceOffset');
+            $debugInfo = $this->getPrivatePropOfParent('debugInfo');
+
+            $this->setPrivatePropOfParent('sourceLine', $sourceLine + substr_count($source, "\n", $sourceOffset));
+            $this->setPrivatePropOfParent('sourceOffset', \strlen($source));
+            $this->setPrivatePropOfParent('debugInfo', $debugInfo + [$sourceLine => $node->getTemplateLine()]);
+            $this->setPrivatePropOfParent('lastLine', $node->getTemplateLine());
+        }
 
         return $this;
     }

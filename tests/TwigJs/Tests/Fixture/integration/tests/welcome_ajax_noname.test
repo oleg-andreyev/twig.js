@@ -11,7 +11,6 @@ Welcome AJAX noname test
 {% endblock %}
 
 {% block body %}
-
     <h1>Welcome {{ name|default("World") }}!</h1>
 
     <p>
@@ -42,17 +41,17 @@ Welcome AJAX noname test
 </body>
 </html>
 --TEMPLATE(macros.twig)--
-{% macro link(link, content, title) %}
+{%- macro link(link, content, title) -%}
 <a href="{{ link }}"
     {%- if title is not empty %} title="{{ title }}"{% endif -%}
     >{{ content }}</a>
-{% endmacro %}
+{%- endmacro -%}
 --TEMPLATE(traitable.twig)--
 {% block title %}foo{% endblock %}
 --DATA--
 return { ajax: true }
 --EXPECT--
-<h1>Welcome World!</h1>
+    <h1>Welcome World!</h1>
 
-    <p><a href="/login" title="Login">Please login.</a>
-</p>
+    <p><a href="/login" title="Login">Please login.</a></p>
+

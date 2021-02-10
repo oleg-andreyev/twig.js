@@ -18,6 +18,8 @@
 
 namespace TwigJs\Compiler\Expression\Binary;
 
+use Twig\Node\Expression\Binary\FloorDivBinary;
+use Twig\Node\Node;
 use TwigJs\Compiler\Expression\BinaryCompiler;
 use TwigJs\JsCompiler;
 
@@ -25,15 +27,16 @@ class FloorDivCompiler extends BinaryCompiler
 {
     public function getType()
     {
-        return 'Twig_Node_Expression_Binary_FloorDiv';
+        return FloorDivBinary::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
-        if (!$node instanceof \Twig_Node_Expression_Binary_FloorDiv) {
+        if (!$node instanceof FloorDivBinary) {
             throw new \RuntimeException(
                 sprintf(
-                    '$node must be an instanceof of \Twig_Node_Expression_Binary_FloorDiv, but got "%s".',
+                    '$node must be an instanceof of %s, but got "%s".',
+                    FloorDivBinary::class,
                     get_class($node)
                 )
             );
@@ -44,7 +47,7 @@ class FloorDivCompiler extends BinaryCompiler
         $compiler->raw(')');
     }
 
-    protected function operator(JsCompiler $compiler, \Twig_NodeInterface $node)
+    protected function operator(JsCompiler $compiler, Node $node)
     {
         return $compiler->raw('/');
     }

@@ -2,41 +2,66 @@
 
 namespace TwigJs\Tests;
 
-use DNode;
-use Exception;
-use PHPUnit_Framework_TestCase;
-use React;
+use Datto\JsonRpc\Http\Client;
+use Datto\JsonRpc\Responses\ErrorResponse;
+use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RecursiveRegexIterator;
 use RegexIterator;
+use Twig\Environment;
+use Twig\Loader\ArrayLoader;
+use Twig\Loader\ChainLoader;
+use Twig\Loader\FilesystemLoader;
+use Twig\Source;
 use TwigJs\Twig\TwigJsExtension;
 use TwigJs\JsCompiler;
-use Twig_Environment;
-use Twig_Extension_Core;
-use Twig_Loader_Array;
-use Twig_Loader_Chain;
-use Twig_Loader_Filesystem;
 
-class FullIntegrationTest extends PHPUnit_Framework_TestCase
+class FullIntegrationTest extends TestCase
 {
-    public function setDnode($dnode, $loop)
+    /** @var Client */
+    private static $rpc;
+
+    /** @var ArrayLoader */
+    private $arrayLoader;
+
+    /** @var Environment */
+    private $env;
+
+    public static function setUpBeforeClass(): void
     {
-        $this->dnode = $dnode;
-        $this->loop = $loop;
+        self::$rpc = new Client('http://0.0.0.0:7070');
     }
 
-    public function setUp()
+    public static function tearDownAfterClass(): void
     {
-        $this->arrayLoader = new Twig_Loader_Array(array());
-        $this->env = new Twig_Environment();
-        $this->env->addExtension(new Twig_Extension_Core());
+        self::$rpc->query( 'exit', [], $response);
+        self::$rpc->send();
+    }
+
+    private function renderTemplate($name, $javascript, $parameters)
+    {
+        $output = '';
+        self::$rpc->query( 'render', [$name, $javascript, $parameters], $output);
+        self::$rpc->send();
+
+        if ($output instanceof ErrorResponse) {
+            throw new \ErrorException($output->getMessage());
+        }
+
+        return $output;
+    }
+
+    public function setUp(): void
+    {
+        $this->arrayLoader = new ArrayLoader(array());
+        $this->env = new Environment($this->arrayLoader);
         $this->env->addExtension(new TwigJsExtension());
         $this->env->setLoader(
-            new Twig_Loader_Chain(
+            new ChainLoader(
                 array(
                     $this->arrayLoader,
-                    new Twig_Loader_Filesystem(__DIR__.'/Fixture/integration')
+                    new FilesystemLoader(__DIR__.'/Fixture/integration')
                 )
             )
         );
@@ -47,104 +72,108 @@ class FullIntegrationTest extends PHPUnit_Framework_TestCase
      * @test
      * @dataProvider getIntegrationTests
      */
-    public function integrationTest($file, $message, $condition, $templates, $exception, $outputs)
+    public function integrationTest($file, $message, $data, $templates, $exception, $expectedOutput)
     {
-        foreach ($outputs as $match) {
-            $templateParameters = $match[1];
-            $templateSource = $templates['index.twig'];
-            $javascript = '';
-            foreach ($templates as $name => $twig) {
-                $this->arrayLoader->setTemplate($name, $twig);
-            }
-            foreach ($templates as $name => $twig) {
-                $javascript .= $this->compileTemplate($twig, $name);
-            }
-            $expectedOutput = trim($match[3], "\n ");
-            try {
-                $renderedOutput = $this->renderTemplate('index', $javascript, $templateParameters);
-            } catch (Exception $e) {
-                $this->markTestSkipped($e->getMessage());
-            }
+        $javascript = '';
 
-            $this->assertEquals($expectedOutput, $renderedOutput);
+        foreach ($templates as $name => $twig) {
+            $this->arrayLoader->setTemplate($name, $twig);
         }
+
+        foreach ($templates as $name => $twig) {
+            $javascript .= $this->compileTemplate($twig, $name);
+        }
+
+        $renderedOutput = $this->renderTemplate('index', $javascript, $data);
+
+        self::assertEquals($expectedOutput, $renderedOutput);
     }
 
     public function getIntegrationTests()
     {
-        $tests = array();
         $directory = new RecursiveDirectoryIterator(__DIR__ . '/Fixture/integration');
         $iterator = new RecursiveIteratorIterator($directory);
         $regex = new RegexIterator($iterator, '/\.test/', RecursiveRegexIterator::GET_MATCH);
-        $test = $this;
-        $tests = array_map(
-            function ($file) use ($test) {
-                return $test->loadTest($file);
-            },
-            array_keys(iterator_to_array($regex))
-        );
-        return $tests;
+
+        foreach (array_keys(iterator_to_array($regex)) as $file) {
+            yield $file => $this->loadTest($file);
+        }
     }
 
     public function loadTest($file)
     {
-        $test = file_get_contents($file);
+        $fp = fopen($file, "rb");
 
-        // @codingStandardsIgnoreStart
-        if (preg_match('/--TEST--\s*(.*?)\s*(?:--CONDITION--\s*(.*))?\s*((?:--TEMPLATE(?:\(.*?\))?--(?:.*?))+)\s*(?:--DATA--\s*(.*))?\s*--EXCEPTION--\s*(.*)/sx', $test, $match)) {
-            $message = $match[1];
-            $condition = $match[2];
-            $templates = $this->parseTemplates($match[3]);
-            $exception = $match[5];
-            $outputs = array(array(null, $match[4], null, ''));
-        } elseif (preg_match('/--TEST--\s*(.*?)\s*(?:--CONDITION--\s*(.*))?\s*((?:--TEMPLATE(?:\(.*?\))?--(?:.*?))+)--DATA--.*?--EXPECT--.*/s', $test, $match)) {
-            $message = $match[1];
-            $condition = $match[2];
-            $templates = $this->parseTemplates($match[3]);
-            $exception = false;
-            preg_match_all('/--DATA--(.*?)(?:--CONFIG--(.*?))?--EXPECT--(.*?)(?=\-\-DATA\-\-|$)/s', $test, $outputs, PREG_SET_ORDER);
+        if (!feof($fp)) {
+            $line = fgets($fp);
+
+            if ($line === false) {
+                throw new \InvalidArgumentException(sprintf('Cannot read test file "%s"', $file));
+            }
         } else {
-            throw new InvalidArgumentException(sprintf('Test "%s" is not valid.', $file));
+            throw new \InvalidArgumentException(sprintf('Test "%s" file is empty', $file));
         }
-        // @codingStandardsIgnoreStart
+
+        if (strncmp('--TEST--', $line, 8)) {
+            throw new \InvalidArgumentException(sprintf('Test must start with --TEST-- [%s]', $file));
+        }
+
+        $section = 'TEST';
+        $templateName = false;
+        $sectionText = ['TEST' => ''];
+
+        $sections = [
+            'EXPECT', 'TEMPLATE', 'DATA'
+        ];
+
+        while (!feof($fp)) {
+            $line = fgets($fp);
+
+            if ($line === false) {
+                break;
+            }
+
+            // Match the beginning of a section.
+            if (preg_match('/^--([_A-Z]+)(?:\(([_a-z.]*)\))?--/', $line, $match)) {
+                $section = (string) $match[1];
+                $templateName = null;
+
+                // check for unknown sections
+                if (!in_array($section, $sections)) {
+                    throw new \InvalidArgumentException(sprintf('Unknown section [%s] [%s]', $section, $file));
+                }
+
+                if ($section === 'TEMPLATE') {
+                    $templateName = (string) ($match[2] ?? 'index.twig');
+                }
+
+                if ($templateName) {
+                    $sectionText[$section][$templateName] = '';
+                } else {
+                    $sectionText[$section] = '';
+                }
+                continue;
+            }
+
+            if ($templateName) {
+                $sectionText[$section][$templateName] .= $line;
+            } else {
+                $sectionText[$section] .= $line;
+            }
+        }
 
         return array(
             $file,
-            $message,
-            $condition,
-            $templates,
-            $exception,
-            $outputs
+            $sectionText['TEST'],
+            $sectionText['DATA'],
+            $sectionText['TEMPLATE'],
+            null, //$exception,
+            $sectionText['EXPECT']
         );
-    }
-
-    protected static function parseTemplates($test)
-    {
-        $templates = array();
-        preg_match_all('/--TEMPLATE(?:\((.*?)\))?--(.*?)(?=\-\-TEMPLATE|$)/s', $test, $matches, PREG_SET_ORDER);
-        foreach ($matches as $match) {
-            $templates[($match[1] ? $match[1] : 'index.twig')] = $match[2];
-        }
-
-        return $templates;
     }
 
     private function compileTemplate($source, $name)
     {
-        $javascript = $this->env->compileSource($source, $name);
-        return $javascript;
-    }
-
-    private function renderTemplate($name, $javascript, $parameters)
-    {
-        $output = '';
-        $this->dnode->connect(7070, function ($remote, $connection) use ($name, $javascript, $parameters, &$output) {
-            $remote->render($name, $javascript, $parameters, function ($rendered) use ($connection, &$output) {
-                $output = trim($rendered, "\n ");
-                $connection->end();
-            });
-        });
-        $this->loop->run();
-        return $output;
+        return $this->env->compileSource(new Source($source, $name));
     }
 }
