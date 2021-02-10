@@ -13,7 +13,7 @@ class TemplateNameGenerator
      */
     public static function generate($templatePath)
     {
-        $templateName = basename($templatePath, '.twig');
+        $templateName = basename($templatePath);
         $templateName = str_replace(':', '.', $templateName);
         $templateName = preg_replace('/\.+/', '.', $templateName);
         $templateName = trim($templateName, '.');
