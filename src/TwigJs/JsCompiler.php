@@ -61,7 +61,7 @@ use TwigJs\Compiler\Expression\FunctionCompiler;
 use TwigJs\Compiler\Expression\GetAttrCompiler;
 use TwigJs\Compiler\Expression\MethodCallCompiler;
 use TwigJs\Compiler\Expression\NameCompiler;
-use TwigJs\Compiler\Expression\NullCoalesceExpression as NullCoalesceExpressionCompiler;
+use TwigJs\Compiler\Expression\NullCoalesceCompiler;
 use TwigJs\Compiler\Expression\ParentCompiler;
 use TwigJs\Compiler\Expression\TempNameCompiler;
 use TwigJs\Compiler\Expression\TestCompiler;
@@ -217,7 +217,7 @@ class JsCompiler extends Compiler
             ConstantExpression::class       => new ConstantCompiler(),
             GetAttrExpression::class        => new GetAttrCompiler(),
             MethodCallExpression::class     => new MethodCallCompiler(),
-            NullCoalesceExpression::class   => new NullCoalesceExpressionCompiler(),
+            NullCoalesceExpression::class   => new NullCoalesceCompiler(),
 
             AddBinary::class => new AddCompiler(),
             AndBinary::class => new AndCompiler(),

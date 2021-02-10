@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace TwigJs\Compiler\Expression;
 
+use Twig\Node\Expression\NullCoalesceExpression;
+use Twig\Node\Node;
 use TwigJs\JsCompiler;
 use TwigJs\TypeCompilerInterface;
 
-class NullCoalesceExpression implements TypeCompilerInterface
+class NullCoalesceCompiler implements TypeCompilerInterface
 {
-
     public function getType()
     {
-        return 'Twig\Node\Expression\NullCoalesceExpression';
+        return NullCoalesceExpression::class;
     }
 
-    public function compile(JsCompiler $compiler, \Twig_NodeInterface $node)
+    public function compile(JsCompiler $compiler, Node $node)
     {
         if (!$node instanceof \Twig_Node_Expression_Conditional) {
             throw new \RuntimeException(
