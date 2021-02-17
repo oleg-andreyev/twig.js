@@ -44,7 +44,7 @@ class ConstantCompiler implements TypeCompilerInterface
             );
         }
 
-        if ($compiler->isTemplateName || preg_match('/\.twig$/', $node->getAttribute('value'))) {
+        if ($compiler->isTemplateName || preg_match('/\.twig$/', (string) $node->getAttribute('value'))) {
             $compiler->repr($this->getTemplateNameFromTemplateConstant($compiler, $node));
 
             return;
