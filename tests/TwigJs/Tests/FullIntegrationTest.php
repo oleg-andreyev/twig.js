@@ -61,7 +61,7 @@ class FullIntegrationTest extends TestCase
             new ChainLoader(
                 array(
                     $this->arrayLoader,
-                    new FilesystemLoader(__DIR__.'/Fixture/integration')
+                    new FilesystemLoader(__DIR__.'/Fixture/integration', getcwd())
                 )
             )
         );
