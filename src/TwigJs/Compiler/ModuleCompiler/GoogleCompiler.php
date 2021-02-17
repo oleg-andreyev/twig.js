@@ -30,7 +30,7 @@ class GoogleCompiler extends ModuleCompiler
         $filename = $node->getSourceContext()->getPath();
 
         if (!empty($filename) && false !== strpos($filename, DIRECTORY_SEPARATOR)) {
-            $parts = explode(DIRECTORY_SEPARATOR, realpath($filename));
+            $parts = explode(DIRECTORY_SEPARATOR, realpath((string) $filename));
             $filename = implode(DIRECTORY_SEPARATOR, array_splice($parts, -4));
         }
 
