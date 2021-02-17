@@ -179,6 +179,8 @@ class JsCompiler extends Compiler
     private $filterFunctions;
     private $functionMap;
 
+    private $resolveConstantTemplates = true;
+
     public function __construct(Environment $env)
     {
         parent::__construct($env);
@@ -298,6 +300,16 @@ class JsCompiler extends Compiler
             'random' => 'twig.functions.random',
             'range' => 'twig.range',
         ];
+    }
+
+    public function setResolveConstanteTemplates(bool $value)
+    {
+        $this->resolveConstantTemplates = $value;
+    }
+
+    public function shouldResolveConstantTemplates(): bool
+    {
+        return $this->resolveConstantTemplates;
     }
 
     public function setDefines(array $defines)

@@ -67,7 +67,7 @@ abstract class ModuleCompiler
         } else {
             $compiler
                 ->setTemplateName(true)
-                ->write('twig.templates[')
+                ->raw('twig.templates[')
                 ->subcompile($node->getNode('parent'))
                 ->raw(']')
                 ->setTemplateName(false)

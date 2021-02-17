@@ -84,7 +84,7 @@ class FullIntegrationTest extends TestCase
             $javascript .= $this->compileTemplate($twig, $name);
         }
 
-        $renderedOutput = $this->renderTemplate('index', $javascript, $data);
+        $renderedOutput = $this->renderTemplate('index.twig', $javascript, $data);
 
         self::assertEquals($expectedOutput, $renderedOutput);
     }

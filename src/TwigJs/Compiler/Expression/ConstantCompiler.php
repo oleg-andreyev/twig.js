@@ -18,6 +18,7 @@
 
 namespace TwigJs\Compiler\Expression;
 
+use Twig\Error\LoaderError;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Node;
 use TwigJs\JsCompiler;
@@ -43,12 +44,29 @@ class ConstantCompiler implements TypeCompilerInterface
             );
         }
 
-        if ($compiler->isTemplateName) {
-            $compiler->repr(TemplateNameGenerator::generate($node->getAttribute('value')));
+        if ($compiler->isTemplateName || preg_match('/\.twig$/', $node->getAttribute('value'))) {
+            $compiler->repr($this->getTemplateNameFromTemplateConstant($compiler, $node));
 
             return;
         }
 
         $compiler->repr($node->getAttribute('value'));
+    }
+
+    private function getTemplateNameFromTemplateConstant(JsCompiler $compiler, Node $node)
+    {
+        if (!$compiler->shouldResolveConstantTemplates()) {
+            return $compiler->repr(TemplateNameGenerator::generate($node->getAttribute('value')));
+        }
+
+        try {
+            $env = $compiler->getEnvironment();
+            $source = $env->getLoader()->getSourceContext($node->getAttribute('value'));
+            $module = $env->parse($env->tokenize($source, $node->getAttribute('value')));
+
+            return $module->hasAttribute('twig_js_name') ? $module->getAttribute('twig_js_name') : TemplateNameGenerator::generate($node->getAttribute('value'));
+        } catch (LoaderError $e) {
+            return $compiler->repr(TemplateNameGenerator::generate($node->getAttribute('value')));
+        }
     }
 }
