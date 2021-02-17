@@ -44,7 +44,7 @@ class ConstantCompiler implements TypeCompilerInterface
             );
         }
 
-        if ($compiler->isTemplateName || preg_match('/\.twig$/', (string) $node->getAttribute('value'))) {
+        if ($compiler->isTemplateName || preg_match('/\.twig$/', $node->getAttribute('value'))) {
             $compiler->repr($this->getTemplateNameFromTemplateConstant($compiler, $node));
 
             return;
@@ -56,7 +56,7 @@ class ConstantCompiler implements TypeCompilerInterface
     private function getTemplateNameFromTemplateConstant(JsCompiler $compiler, Node $node)
     {
         if (!$compiler->shouldResolveConstantTemplates()) {
-            return $compiler->repr(TemplateNameGenerator::generate($node->getAttribute('value')));
+            return TemplateNameGenerator::generate($node->getAttribute('value'));
         }
 
         try {
@@ -66,7 +66,7 @@ class ConstantCompiler implements TypeCompilerInterface
 
             return $module->hasAttribute('twig_js_name') ? $module->getAttribute('twig_js_name') : TemplateNameGenerator::generate($node->getAttribute('value'));
         } catch (LoaderError $e) {
-            return $compiler->repr(TemplateNameGenerator::generate($node->getAttribute('value')));
+            return TemplateNameGenerator::generate($node->getAttribute('value'));
         }
     }
 }
