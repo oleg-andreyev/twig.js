@@ -61,7 +61,7 @@ class FullIntegrationTest extends TestCase
             new ChainLoader(
                 array(
                     $this->arrayLoader,
-                    new FilesystemLoader(__DIR__.'/Fixture/integration')
+                    new FilesystemLoader(__DIR__.'/Fixture/integration', getcwd())
                 )
             )
         );
@@ -84,7 +84,7 @@ class FullIntegrationTest extends TestCase
             $javascript .= $this->compileTemplate($twig, $name);
         }
 
-        $renderedOutput = $this->renderTemplate('index', $javascript, $data);
+        $renderedOutput = $this->renderTemplate('index.twig', $javascript, $data);
 
         self::assertEquals($expectedOutput, $renderedOutput);
     }

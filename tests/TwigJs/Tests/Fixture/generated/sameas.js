@@ -15,22 +15,22 @@ goog.require('twig.filter');
  * @param {twig.Environment} env
  * @extends {twig.Template}
  */
-twig.templates['sameas'] = function(env) {
+twig.templates['sameas.twig'] = function(env) {
     twig.Template.call(this, env);
 };
-twig.inherits(twig.templates['sameas'], twig.Template);
+twig.inherits(twig.templates['sameas.twig'], twig.Template);
 
 /**
  * @inheritDoc
  */
-twig.templates['sameas'].prototype.getParent_ = function(context) {
+twig.templates['sameas.twig'].prototype.getParent_ = function(context) {
     return false;
 };
 
 /**
  * @inheritDoc
  */
-twig.templates['sameas'].prototype.render_ = function(sb, context, blocks) {
+twig.templates['sameas.twig'].prototype.render_ = function(sb, context, blocks) {
     blocks = typeof(blocks) == "undefined" ? {} : blocks;
     /* line 1 */
     sb.append("This is a simple template.<br \/><br \/>\n\n");
@@ -44,7 +44,7 @@ twig.templates['sameas'].prototype.render_ = function(sb, context, blocks) {
 /**
  * @inheritDoc
  */
-twig.templates['sameas'].prototype.getTemplateName = function() {
+twig.templates['sameas.twig'].prototype.getTemplateName = function() {
     return "sameas";
 };
 
@@ -53,6 +53,6 @@ twig.templates['sameas'].prototype.getTemplateName = function() {
  *
  * @return {boolean}
  */
-twig.templates['sameas'].prototype.isTraitable = function() {
+twig.templates['sameas.twig'].prototype.isTraitable = function() {
     return false;
 };

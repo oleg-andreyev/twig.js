@@ -16,7 +16,7 @@ class TemplateGenerationTest extends TestCase
      */
     public function testGenerate($inputFile, $outputFile)
     {
-        $env = new Environment(new FilesystemLoader(__DIR__.'/Fixture/templates'));
+        $env = new Environment(new FilesystemLoader(__DIR__.'/Fixture/templates', getcwd()));
         $env->addExtension(new TwigJsExtension());
         $env->setCompiler(new JsCompiler($env));
 

@@ -70,9 +70,7 @@ class ForCompiler implements TypeCompilerInterface
 
         $compiler
             ->write("var $seqName = ")
-//             ->write("\$context['_seq'] = twig_ensure_traversable(")
             ->subcompile($node->getNode('seq'))
-//             ->raw(");\n")
             ->raw(";\n")
         ;
 
@@ -80,41 +78,32 @@ class ForCompiler implements TypeCompilerInterface
             $compiler->write("var $iteratedName = false;\n");
         }
 
-        if ($node->getAttribute('with_loop')) {
+        $loopData = [
+            'index0' => 0,
+            'index' => 1,
+            'first' => true
+        ];
+
+        if ($count > 0) {
+            $parentSuffix = ($count - 1 > 0) ? $count - 1 : '';
+            $loopData['parent'] = "loop$parentSuffix";
+        }
+
+        $compiler
+            ->write(sprintf('var %s = %s;', $loopName, json_encode($loopData, JSON_THROW_ON_ERROR)))
+            ->write("\n");
+
+        if (false === $node->getAttribute('ifexpr')) {
             $compiler
-                ->write("var $loopName = {\n")
+                ->write("if (twig.countable($seqName)) {\n")
                 ->indent()
-            ;
-
-            if ($count > 0) {
-                $parentSuffix = ($count-1 > 0) ? $count - 1 : '';
-
-                $compiler
-                    ->write("'parent': loop$parentSuffix,\n")
-                ;
-            }
-
-            $compiler
-                ->write("'index0': 0,\n")
-                ->write("'index': 1,\n")
-                ->write("'first': true\n")
+                ->write("var length = twig.count($seqName);\n")
+                ->write("{$loopName}['revindex0'] = length - 1;\n")
+                ->write("{$loopName}['revindex'] = length;\n")
+                ->write("{$loopName}['length'] = length;\n")
+                ->write("{$loopName}['last'] = 1 === length;\n")
                 ->outdent()
-                ->write("};\n")
-            ;
-
-            if (false === $node->getAttribute('ifexpr')) {
-                $compiler
-                    ->write("if (twig.countable($seqName)) {\n")
-                    ->indent()
-                    ->write("var length = twig.count($seqName);\n")
-                    ->write("{$loopName}['revindex0'] = length - 1;\n")
-                    ->write("{$loopName}['revindex'] = length;\n")
-                    ->write("{$loopName}['length'] = length;\n")
-                    ->write("{$loopName}['last'] = 1 === length;\n")
-                    ->outdent()
-                    ->write("}\n")
-                ;
-            }
+                ->write("}\n");
         }
 
         $ref = new \ReflectionProperty($node, 'loop');

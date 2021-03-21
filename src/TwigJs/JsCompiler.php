@@ -61,6 +61,7 @@ use TwigJs\Compiler\Expression\FunctionCompiler;
 use TwigJs\Compiler\Expression\GetAttrCompiler;
 use TwigJs\Compiler\Expression\MethodCallCompiler;
 use TwigJs\Compiler\Expression\NameCompiler;
+use TwigJs\Compiler\Expression\NullCoalesceCompiler;
 use TwigJs\Compiler\Expression\ParentCompiler;
 use TwigJs\Compiler\Expression\TempNameCompiler;
 use TwigJs\Compiler\Expression\TestCompiler;
@@ -152,6 +153,7 @@ use Twig\Node\Expression\Test\EvenTest;
 use Twig\Node\Expression\Test\NullTest;
 use Twig\Node\Expression\Test\OddTest;
 use Twig\Node\Expression\Test\SameasTest;
+use Twig\Node\Expression\NullCoalesceExpression;
 
 class JsCompiler extends Compiler
 {
@@ -176,6 +178,8 @@ class JsCompiler extends Compiler
 
     private $filterFunctions;
     private $functionMap;
+
+    private $resolveConstantTemplates = true;
 
     public function __construct(Environment $env)
     {
@@ -205,16 +209,17 @@ class JsCompiler extends Compiler
             ConditionalExpression::class => new ConditionalCompiler(),
             ArrayExpression::class => new ArrayCompiler(),
             FunctionExpression::class => new FunctionCompiler(),
-            ParentExpression::class => new ParentCompiler(),
+            ParentExpression::class         => new ParentCompiler(),
             BlockReferenceExpression::class => new ExpressionBlockReferenceCompiler(),
-            AssignNameExpression::class => new AssignNameCompiler(),
-            TestExpression::class => new TestCompiler(),
-            NameExpression::class => new NameCompiler(),
-            FilterExpression::class => new FilterCompiler(),
-            DefaultFilter::class => new DefaultFilterCompiler(),
-            ConstantExpression::class => new ConstantCompiler(),
-            GetAttrExpression::class => new GetAttrCompiler(),
-            MethodCallExpression::class => new MethodCallCompiler(),
+            AssignNameExpression::class     => new AssignNameCompiler(),
+            TestExpression::class           => new TestCompiler(),
+            NameExpression::class           => new NameCompiler(),
+            FilterExpression::class         => new FilterCompiler(),
+            DefaultFilter::class            => new DefaultFilterCompiler(),
+            ConstantExpression::class       => new ConstantCompiler(),
+            GetAttrExpression::class        => new GetAttrCompiler(),
+            MethodCallExpression::class     => new MethodCallCompiler(),
+            NullCoalesceExpression::class   => new NullCoalesceCompiler(),
 
             AddBinary::class => new AddCompiler(),
             AndBinary::class => new AndCompiler(),
@@ -252,7 +257,7 @@ class JsCompiler extends Compiler
             SameasTest::class => new SameasCompiler()
         ];
 
-        $this->testCompilers = array(
+        $this->testCompilers = [
             'defined' => new DefinedCompiler(),
             'divisibleby' => new DivisibleByCompiler(),
             'empty' => new EmptyCompiler(),
@@ -260,11 +265,11 @@ class JsCompiler extends Compiler
             'none' => new NoneCompiler(),
             'null' => new NullCompiler(),
             'odd' => new OddCompiler(),
-            'sameas' => new SameAsCompiler(),
-        );
+            'same as' => new SameAsCompiler(),
+        ];
 
-        $this->filterCompilers = array();
-        $this->filterFunctions = array(
+        $this->filterCompilers = [];
+        $this->filterFunctions = [
             '_default' => 'twig.filter.def',
             'abs' => 'twig.filter.abs',
             'batch' => 'twig.filter.batch',
@@ -287,14 +292,24 @@ class JsCompiler extends Compiler
             'trim' => 'twig.filter.trim',
             'upper' => 'twig.filter.upper',
             'url_encode' => 'encodeURIComponent',
-        );
+        ];
 
-        $this->functionMap = array(
+        $this->functionMap = [
             'max' => 'twig.functions.max',
             'min' => 'twig.functions.min',
             'random' => 'twig.functions.random',
             'range' => 'twig.range',
-        );
+        ];
+    }
+
+    public function setResolveConstanteTemplates(bool $value)
+    {
+        $this->resolveConstantTemplates = $value;
+    }
+
+    public function shouldResolveConstantTemplates(): bool
+    {
+        return $this->resolveConstantTemplates;
     }
 
     public function setDefines(array $defines)

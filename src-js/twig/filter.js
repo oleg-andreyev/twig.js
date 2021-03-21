@@ -222,6 +222,7 @@ twig.filter.title = function(env, value) {
  */
 twig.filter.trim = function(value, opt_charactermask) {
 	var mask = "\n ";
+	value += "";
 	if (opt_charactermask) {
 		mask = twig.pregQuote(opt_charactermask);
 	}

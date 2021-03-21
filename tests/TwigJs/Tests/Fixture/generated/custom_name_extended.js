@@ -24,7 +24,7 @@ twig.inherits(twig.templates['bar'], twig.Template);
  * @inheritDoc
  */
 twig.templates['bar'].prototype.getParent_ = function(context) {
-    return twig.templates['foo'];
+    return twig.templates["foo"];
 };
 
 /**
